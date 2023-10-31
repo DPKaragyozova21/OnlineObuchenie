@@ -3,6 +3,7 @@
 #include "SDLHandler.h"
 #include "Tile.h"
 #include "Camera.h"
+#include "Timer.h"
 
 namespace fl
 {
@@ -30,6 +31,9 @@ private:
     void HandleEvent();
 
 private:
+
+    float deltaTime;
+    Timer frameTimer;
 
     Vector2 resolution;
 

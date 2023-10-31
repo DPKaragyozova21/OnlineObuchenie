@@ -3,12 +3,14 @@
 #include <random>
 #include <iostream>
 
-#define deltaTime 16.667
+#define FPS 120
 
 namespace fl
 {
 
     Game::Game() :
+    deltaTime(16.667),
+    frameTimer(deltaTime),
     resolution({ 1280, 720 }),
     camera(resolution, deltaTime),
     sdlHandler({ "FusionLab", resolution, camera.zoom }),
@@ -34,6 +36,7 @@ void Game::Run()
 {
     while (!shouldQuit)
     {
+
         currentEvent = sdlHandler.GetInput();
 
         HandleEvent();
@@ -41,7 +44,10 @@ void Game::Run()
         RenderView();
         camera.Update();
 
-        SDL_Delay(deltaTime);
+        frameTimer.GetDeltaTime();
+        
+        if (1000 / FPS + deltaTime < 0) deltaTime = 0;
+        SDL_Delay(1000 / FPS + deltaTime);
     }
 }
 
@@ -69,7 +75,7 @@ void Game::RenderView()
                 case TileType::O2:
                     sprite = sdl::SpriteEnum::TILE_O2;
                 }
-                sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + (i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * (32 * camera.zoom))});
+                sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))});
             }
         }
     }
@@ -109,6 +115,11 @@ void Game::HandleEvent()
 
             case SDLK_d:
                 camera.Move(Direction::RIGHT, true);
+                break;
+
+            case SDLK_LSHIFT:
+                camera.Sprint(true);
+                break;
             }
             break;
 
@@ -129,12 +140,25 @@ void Game::HandleEvent()
 
             case SDLK_d:
                 camera.Move(Direction::RIGHT, false);
+                break;
+
+            case SDLK_LSHIFT:
+                camera.Sprint(false);
+                break;
             }
             break;
         
         case SDL_MOUSEWHEEL:
             if (currentEvent->wheel.y < 0) camera.ChangeZoom(false);
             if (currentEvent->wheel.y > 0) camera.ChangeZoom(true);
+            break;
+
+        case SDL_MOUSEMOTION:
+                /*switch (currentEvent->)
+                {
+
+                }*/
+            break;
         }
         break;
 

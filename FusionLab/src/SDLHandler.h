@@ -34,7 +34,7 @@ class SDLHandler
 {
 public:
 
-	SDLHandler(const char* title, const Vector2& res, const uint8_t& cameraZoom);
+	SDLHandler(const char* title, const Vector2& res, const float& cameraZoom);
 
 	~SDLHandler();
 
@@ -56,7 +56,7 @@ private:
 
 	SDL_Texture* spritesheet;
 
-	const uint8_t& zoom;
+	const float& zoom;
 
 	mutable bool shouldRender;
 };

@@ -2,6 +2,8 @@
     
 #include "SDLHandler.h"
 
+#include <thread>
+
 namespace fl
 {
 
@@ -29,9 +31,11 @@ public:
 
     void Update();
 
+    void Sprint(const bool& sprint);
+
 public:
 
-    uint8_t zoom;
+    float zoom;
 
 private:
     
@@ -45,6 +49,8 @@ private:
     float speed;
 
     bool moved;
+
+    std::thread* zoomThread;
 };
 
 }
