@@ -3,13 +3,13 @@
 #include <random>
 #include <iostream>
 
-#define FPS 120
+#define FPS 120.0f
 
 namespace fl
 {
 
     Game::Game() :
-    deltaTime(16.667),
+    deltaTime(1000 / FPS),
     frameTimer(deltaTime),
     resolution({ 1280, 720 }),
     camera(resolution, deltaTime),
@@ -21,7 +21,7 @@ namespace fl
     std::default_random_engine generator;
     std::uniform_int_distribution<int> distribution(0, 1);
 
-    for (int i = 0; i < 1000 * 1000; i++)
+    for (int i = 0; i < 10000 * 10000; i++)
     {
         tiles[i].type = (TileType)distribution(generator);
     }
@@ -36,6 +36,7 @@ void Game::Run()
 {
     while (!shouldQuit)
     {
+        frameTimer.GetDeltaTime();
 
         currentEvent = sdlHandler.GetInput();
 
@@ -44,7 +45,6 @@ void Game::Run()
         RenderView();
         camera.Update();
 
-        frameTimer.GetDeltaTime();
         
         if (1000 / FPS + deltaTime < 0) deltaTime = 0;
         SDL_Delay(1000 / FPS + deltaTime);
@@ -64,7 +64,7 @@ void Game::RenderView()
     {
         for (int j = -1; j <= camBounds.h; j++)
         {
-            if ((int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 1000)) >= 0 && (int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 1000)) < 1000000)
+            if ((int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000)) >= 0 && (int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000)) < 100000000)
             {
                 switch (tiles[(int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 1000))].type)
                 {

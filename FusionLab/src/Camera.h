@@ -19,7 +19,7 @@ class Camera
 {
 public:
 
-    Camera(const Vector2& windowRes, float frameTime);
+    Camera(const Vector2& windowRes, const float& frameTime);
 
     const Vector2F& GetPosition() const;
     
@@ -40,7 +40,7 @@ public:
 private:
     
     Vector2 res;
-    float deltaTime;
+    const float& deltaTime;
 
     Vector2F pos;
 
