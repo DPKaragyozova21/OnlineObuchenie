@@ -1,7 +1,6 @@
 #pragma once
     
 #include "SDLHandler.h"
-
 #include <thread>
 
 namespace fl
@@ -38,6 +37,10 @@ public:
     float zoom;
 
 private:
+
+    void ZoomAnim(const bool& dir);
+
+private:
     
     Vector2 res;
     const float& deltaTime;
@@ -50,7 +53,7 @@ private:
 
     bool moved;
 
-    std::thread* zoomThread;
+    std::jthread* zoomThread;
 };
 
 }

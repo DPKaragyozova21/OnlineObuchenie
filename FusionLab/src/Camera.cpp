@@ -7,7 +7,7 @@ namespace fl
 {
 
 Camera::Camera(const Vector2& windowRes, const float& frameTime) :
-    res(windowRes), deltaTime(frameTime), pos({ 160000, 160000 }), moveDirs(), speed(0.3), zoom(2), moved(true), zoomThread(nullptr)
+    res(windowRes), deltaTime(frameTime), pos({ 1000, 1000 }), moveDirs(), speed(0.3), zoom(2), moved(true), zoomThread(nullptr)
 {
     moveDirs[0] = false; moveDirs[1] = false; moveDirs[2] = false; moveDirs[3] = false;
 }
@@ -39,40 +39,11 @@ void Camera::Move(const Direction& dir, const bool& moving)
 
 void Camera::ChangeZoom(const bool& dir)
 {
-    auto zoomLambda = [this, dir]()
-    {
-    std::cout << zoom << std::endl;
-        if (dir)
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                if (this->zoom > 4)
-                {
-                    this->zoom = 4; break;
-                }
-                this->zoom += 0.1;
-                moved = true;
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                if (this->zoom < 1)
-                {
-                    this->zoom = 1; break;
-                }
-                this->zoom -= 0.1;
-                moved = true;
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
-        }
-        this->zoom = round(this->zoom);
-        moved = true;
-    };
+    zoomThread = new std::jthread(&Camera::ZoomAnim, this, dir);
+}
 
-
+void Camera::ZoomAnim(const bool& dir)
+{
     if (zoom == 1 && !dir)
     {
         return;
@@ -82,11 +53,39 @@ void Camera::ChangeZoom(const bool& dir)
         return;
     }
 
-    zoomThread = new std::thread(zoomLambda);
+    if (dir)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            if (this->zoom > 4)
+            {
+                this->zoom = 4; break;
+            }
+            this->zoom += 0.1;
+            moved = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            if (this->zoom < 1)
+            {
+                this->zoom = 1; break;
+            }
+            this->zoom -= 0.1;
+            moved = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
+    this->zoom = round(this->zoom);
+    moved = true;
 }
 
 void Camera::Update()
 {
+
     moved = false;
 
     pos.x += ((moveDirs[0] * -1) + (moveDirs[1])) * speed * -deltaTime;

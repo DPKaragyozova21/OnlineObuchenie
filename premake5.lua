@@ -18,7 +18,7 @@ project "FusionLab"
 
     files { "./%{prj.name}/src/**.cpp", "./%{prj.name}/src/**.h" }
 
-    includedirs { "./vendor/SDL2/include", "./vendor/SDL2_image/include", "./%{prj.name}/src"}
+    includedirs { "./vendor/SDL2/include", "./vendor/SDL2_image/include", "./%{prj.name}/src" }
 
     libdirs { "./vendor/SDL2/lib/x86", "./vendor/SDL2_image/lib/x86" }
 

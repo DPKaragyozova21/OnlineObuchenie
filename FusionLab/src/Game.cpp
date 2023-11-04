@@ -18,13 +18,7 @@ namespace fl
     state(GameState::IN_GAME),
     shouldQuit(false)
 {
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> distribution(0, 1);
-
-    for (int i = 0; i < 10000 * 10000; i++)
-    {
-        tiles[i].type = (TileType)distribution(generator);
-    }
+    GenerateTerrain();
 }
 
 Game::~Game()
@@ -66,7 +60,7 @@ void Game::RenderView()
         {
             if ((int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000)) >= 0 && (int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000)) < 100000000)
             {
-                switch (tiles[(int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 1000))].type)
+                switch (tiles[(int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000))].type)
                 {
                 case TileType::NONE:
                     sprite = sdl::SpriteEnum::TILE_NONE;
@@ -154,14 +148,51 @@ void Game::HandleEvent()
             break;
 
         case SDL_MOUSEMOTION:
-                /*switch (currentEvent->)
-                {
-
-                }*/
+            mousePos.x = currentEvent->motion.x;
+            mousePos.y = currentEvent->motion.y;
             break;
         }
         break;
 
+    }
+}
+
+void Game::GenerateTerrain()
+{
+    static constexpr int chunkSize = 10;
+
+    std::random_device generator;
+    std::uniform_int_distribution<int> type(1, 1);
+    std::uniform_int_distribution<int> oreChunk(1, 18);
+    std::uniform_int_distribution<int> voidChance(1, 3);
+    std::uniform_int_distribution<int> offset(0, 1);
+
+    TileType currentChunkOreType = TileType::NONE;
+
+    for (int i = 0; i < 100000000; i++)
+    {
+        tiles[i].type = TileType::NONE;
+    }
+
+    for (int i = 1; i < 999 / chunkSize; i++)
+    {
+        for (int j = 1; j < 999 / chunkSize; j++)
+        {
+
+            if (oreChunk(generator) == 18)
+            {
+                currentChunkOreType = TileType(type(generator));
+            }
+            else continue;
+
+            for (int chunkI = 0; chunkI < chunkSize; chunkI++)
+            {
+                for (int chunkJ = 0; chunkJ < chunkSize; chunkJ++)
+                {
+                    tiles[(i * chunkSize) + chunkI + offset(generator) + (((j * chunkSize) + chunkJ + offset(generator)) * 10000)].type = currentChunkOreType;
+                }
+            }
+        }
     }
 }
 

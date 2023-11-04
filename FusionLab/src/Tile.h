@@ -5,7 +5,7 @@
 namespace fl
 {
 
-enum class TileType : uint32_t
+enum class TileType : uint8_t
 {
     NONE,
     O2

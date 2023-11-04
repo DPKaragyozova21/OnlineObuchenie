@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "Camera.h"
 #include "Timer.h"
+#include <array>
 
 namespace fl
 {
@@ -30,6 +31,8 @@ private:
 
     void HandleEvent();
 
+    void GenerateTerrain();
+
 private:
 
     float deltaTime;
@@ -46,7 +49,9 @@ private:
 
     bool shouldQuit;
 
-    Tile tiles[100000000];
+    Vector2F mousePos;
+
+    std::array<Tile, 100000000> tiles;
     
 };
 
