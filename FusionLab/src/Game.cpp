@@ -151,6 +151,8 @@ void Game::HandleEvent()
             mousePos.x = currentEvent->motion.x;
             mousePos.y = currentEvent->motion.y;
             break;
+        case SDL_MOUSEBUTTONDOWN:
+            break;
         }
         break;
 
@@ -159,12 +161,11 @@ void Game::HandleEvent()
 
 void Game::GenerateTerrain()
 {
-    static constexpr int chunkSize = 10;
+    const int chunkSize = 5;
 
-    std::random_device generator;
+    std::default_random_engine generator;
     std::uniform_int_distribution<int> type(1, 1);
-    std::uniform_int_distribution<int> oreChunk(1, 18);
-    std::uniform_int_distribution<int> voidChance(1, 3);
+    std::uniform_int_distribution<int> oreChunk(1, 80);
     std::uniform_int_distribution<int> offset(0, 1);
 
     TileType currentChunkOreType = TileType::NONE;
@@ -174,12 +175,11 @@ void Game::GenerateTerrain()
         tiles[i].type = TileType::NONE;
     }
 
-    for (int i = 1; i < 999 / chunkSize; i++)
+    for (int i = 1; i < 9999 / chunkSize; i++)
     {
-        for (int j = 1; j < 999 / chunkSize; j++)
+        for (int j = 1; j < 9999 / chunkSize; j++)
         {
-
-            if (oreChunk(generator) == 18)
+            if (oreChunk(generator) == 1)
             {
                 currentChunkOreType = TileType(type(generator));
             }
@@ -189,7 +189,7 @@ void Game::GenerateTerrain()
             {
                 for (int chunkJ = 0; chunkJ < chunkSize; chunkJ++)
                 {
-                    tiles[(i * chunkSize) + chunkI + offset(generator) + (((j * chunkSize) + chunkJ + offset(generator)) * 10000)].type = currentChunkOreType;
+                    tiles[(i * chunkSize) + chunkI + (offset(generator) * offset(generator)) + (((j * chunkSize) + chunkJ + (offset(generator) * offset(generator))) * 10000)].type = currentChunkOreType;
                 }
             }
         }

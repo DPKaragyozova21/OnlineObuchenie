@@ -54,6 +54,7 @@ private:
     bool moved;
 
     std::jthread* zoomThread;
+    bool currentlyZooming;
 };
 
 }

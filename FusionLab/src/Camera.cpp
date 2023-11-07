@@ -7,7 +7,7 @@ namespace fl
 {
 
 Camera::Camera(const Vector2& windowRes, const float& frameTime) :
-    res(windowRes), deltaTime(frameTime), pos({ 1000, 1000 }), moveDirs(), speed(0.3), zoom(2), moved(true), zoomThread(nullptr)
+    res(windowRes), deltaTime(frameTime), pos({ 16000, 16000 }), moveDirs(), speed(0.3), zoom(2), moved(true), zoomThread(nullptr), currentlyZooming(false)
 {
     moveDirs[0] = false; moveDirs[1] = false; moveDirs[2] = false; moveDirs[3] = false;
 }
@@ -39,12 +39,12 @@ void Camera::Move(const Direction& dir, const bool& moving)
 
 void Camera::ChangeZoom(const bool& dir)
 {
-    zoomThread = new std::jthread(&Camera::ZoomAnim, this, dir);
+    if(!currentlyZooming) zoomThread = new std::jthread(&Camera::ZoomAnim, this, dir);
 }
 
 void Camera::ZoomAnim(const bool& dir)
 {
-    if (zoom == 1 && !dir)
+    if (zoom == 0.5 && !dir)
     {
         return;
     }
@@ -52,35 +52,39 @@ void Camera::ZoomAnim(const bool& dir)
     {
         return;
     }
+    currentlyZooming = true;
 
     if (dir)
     {
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 8; i++)
         {
-            if (this->zoom > 4)
+            if (zoom > 4)
             {
-                this->zoom = 4; break;
+                zoom = 4; break;
             }
-            this->zoom += 0.1;
+            zoom += 0.1;
+            if (abs(zoom - round(zoom)) < 0.1 && zoom < 1) break;
             moved = true;
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
     else
     {
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 8; i++)
         {
-            if (this->zoom < 1)
+            if (zoom < 0.5)
             {
-                this->zoom = 1; break;
+                zoom = 0.5; break;
             }
-            this->zoom -= 0.1;
+            zoom -= 0.1;
+            if (abs(zoom - round(zoom)) < 0.1 && zoom < 1) break;
             moved = true;
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
-    this->zoom = round(this->zoom);
+    if(zoom != 0.5) zoom = round(zoom - 0.1);
     moved = true;
+    currentlyZooming = false;
 }
 
 void Camera::Update()
@@ -88,8 +92,8 @@ void Camera::Update()
 
     moved = false;
 
-    pos.x += ((moveDirs[0] * -1) + (moveDirs[1])) * speed * -deltaTime;
-    pos.y += ((moveDirs[2] * -1) + (moveDirs[3])) * speed * -deltaTime;
+    pos.x += ((moveDirs[0] * -1) + (moveDirs[1])) * speed * -deltaTime * (4.5 - zoom);
+    pos.y += ((moveDirs[2] * -1) + (moveDirs[3])) * speed * -deltaTime * (4.5 - zoom);
 
     if (pos.x < res.x / 2) pos.x = res.x / 2;
     if (pos.y < res.y / 2) pos.y = res.y / 2;
