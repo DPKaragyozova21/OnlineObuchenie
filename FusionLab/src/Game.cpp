@@ -39,6 +39,7 @@ void Game::Run()
         RenderView();
         camera.Update();
 
+        std::cout << mousePos.x << " " << mousePos.y << " " << mouseButtonDown[0] << " " << mouseButtonDown[1] << '\n';
         
         if (1000 / FPS + deltaTime < 0) deltaTime = 0;
         SDL_Delay(1000 / FPS + deltaTime);
@@ -152,7 +153,12 @@ void Game::HandleEvent()
             mousePos.y = currentEvent->motion.y;
             break;
         case SDL_MOUSEBUTTONDOWN:
+            if (currentEvent->button.button == SDL_BUTTON_LEFT) mouseButtonDown[0] = true;
+            if (currentEvent->button.button == SDL_BUTTON_RIGHT) mouseButtonDown[1] = true;
             break;
+        case SDL_MOUSEBUTTONUP:
+            if (currentEvent->button.button == SDL_BUTTON_LEFT) mouseButtonDown[0] = false;
+            if (currentEvent->button.button == SDL_BUTTON_RIGHT) mouseButtonDown[1] = false;
         }
         break;
 

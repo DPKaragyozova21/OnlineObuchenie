@@ -50,6 +50,7 @@ private:
     bool shouldQuit;
 
     Vector2F mousePos;
+    bool mouseButtonDown[2];
 
     std::array<Tile, 100000000> tiles;
     
