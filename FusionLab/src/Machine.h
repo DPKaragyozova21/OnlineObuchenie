@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vector>
-#include <cstdint>
+#include "Camera.h"
+
+#include <unordered_map>
 
 namespace fl
 {
@@ -11,9 +12,11 @@ class Machine
 public:
 
 	virtual void Tick() = 0;
-	virtual void TransferItems() = 0;
+	
+	void UpdateIO();
+	void RemoveMachineFromIO(Machine* machine);
 
-	virtual void UpdateIO() = 0;
+	void TransferItems();
 
 	void Rotate();
 
@@ -21,16 +24,20 @@ public:
 
 	uint8_t rotation;
 
-public:
+	static std::unordered_map<int, Machine*>& machineMap;
 
-	std::vector<Machine*> input;
-	std::vector<Machine*> output;
+private:
+
+	Machine* input[4];
+	Machine* output[4];
 
 	std::vector<int*> storage;
 	std::vector<int*> transferStorage;
 
-	bool sideInput[4];
-	bool sideOutput[4];
+	bool canInput[4];
+	bool canOutput[4];
+
+	int pos;
 };
 
 }

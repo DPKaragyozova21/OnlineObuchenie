@@ -33,13 +33,13 @@ void Game::Run()
         frameTimer.GetDeltaTime();
 
         currentEvent = sdlHandler.GetInput();
-
+        
         HandleEvent();
 
         RenderView();
         camera.Update();
 
-        std::cout << mousePos.x << " " << mousePos.y << " " << mouseButtonDown[0] << " " << mouseButtonDown[1] << '\n';
+        std::cout << camera.GetPosition().x << " " << camera.GetPosition().y << std::endl;
         
         if (1000 / FPS + deltaTime < 0) deltaTime = 0;
         SDL_Delay(1000 / FPS + deltaTime);
@@ -167,12 +167,12 @@ void Game::HandleEvent()
 
 void Game::GenerateTerrain()
 {
-    const int chunkSize = 5;
+    const int chunkSize = 8;
 
     std::default_random_engine generator;
     std::uniform_int_distribution<int> type(1, 1);
     std::uniform_int_distribution<int> oreChunk(1, 80);
-    std::uniform_int_distribution<int> offset(0, 1);
+    std::uniform_int_distribution<int> voidChance(0, 1);
 
     TileType currentChunkOreType = TileType::NONE;
 
@@ -195,9 +195,16 @@ void Game::GenerateTerrain()
             {
                 for (int chunkJ = 0; chunkJ < chunkSize; chunkJ++)
                 {
-                    tiles[(i * chunkSize) + chunkI + (offset(generator) * offset(generator)) + (((j * chunkSize) + chunkJ + (offset(generator) * offset(generator))) * 10000)].type = currentChunkOreType;
+                    if ((chunkJ == 0 || chunkJ == chunkSize - 1 || chunkI == 0 || chunkI == chunkSize - 1) && voidChance(generator) != 0) tiles[(i * chunkSize) + chunkI + ((j * chunkSize) + chunkJ) * 10000].type = TileType::NONE;
+                    else tiles[(i * chunkSize) + chunkI + ((j * chunkSize) + chunkJ) * 10000].type = currentChunkOreType;
+                    
                 }
             }
+
+            tiles[(i * chunkSize) + 0 + ((j * chunkSize) + chunkSize - 1) * 10000].type = TileType::NONE;
+            tiles[(i * chunkSize) + 0 + ((j * chunkSize) + 0) * 10000].type = TileType::NONE;
+            tiles[(i * chunkSize) + chunkSize - 1 + ((j * chunkSize) + chunkSize - 1) * 10000].type = TileType::NONE;
+            tiles[(i * chunkSize) + chunkSize - 1 + ((j * chunkSize) + 0) * 10000].type = TileType::NONE;
         }
     }
 }

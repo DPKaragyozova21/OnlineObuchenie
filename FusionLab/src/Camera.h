@@ -14,6 +14,8 @@ enum class Direction : uint8_t
     DOWN
 };
 
+typedef Direction Side;
+
 class Camera
 {
 public:
