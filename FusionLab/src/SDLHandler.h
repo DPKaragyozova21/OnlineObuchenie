@@ -69,6 +69,7 @@ struct Sprite
 {
 	Bounds2 dstRect;
 	SpriteEnum sprite;
+	double rotation;
 };
 
 class SDLHandler
@@ -83,8 +84,8 @@ public:
 
 	void EndFrame() const;
 
-	void RenderSprite(const SpriteEnum& sprite, const Vector2& dstPoint) const;	
-
+	void RenderSprite(const SpriteEnum& sprite, const Vector2& dstPoint, const double& rotation) const;
+	
 	const SDL_Event* GetInput();
 
 private:

@@ -9,7 +9,7 @@ class Miner : Machine
 {
 public:
 
-	Miner(const int& position, const TileType& tile);
+	Miner(const int& position, const TileType& tile, const uint8_t& rotation);
 
 	void Tick() override;
 };

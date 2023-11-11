@@ -32,6 +32,8 @@ private:
 
     void PlaceMachine();
 
+    void DeleteMachine();
+
     void HandleEvent();
 
     void GenerateTerrain();
@@ -58,6 +60,7 @@ protected:
     bool mouseButtonDown[2];
 
     MachineType selectedMachine;
+    uint8_t machineRotation;
     
     std::unordered_map<int, Machine*> machineMap;
 

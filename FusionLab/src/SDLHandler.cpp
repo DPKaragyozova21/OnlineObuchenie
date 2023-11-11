@@ -60,7 +60,7 @@ void SDLHandler::EndFrame() const
 		for (const Sprite& sprite : toRender)
 		{
 			srcRect = {((uint16_t)sprite.sprite * 32) % 2048, ((uint16_t)sprite.sprite * 32) / 2048, 32, 32 };
-			SDL_RenderCopy(renderer, spritesheet, &srcRect, &sprite.dstRect);
+			SDL_RenderCopyEx(renderer, spritesheet, &srcRect, &sprite.dstRect, sprite.rotation, nullptr, SDL_FLIP_NONE);
 		}
 
 		SDL_RenderPresent(renderer);
@@ -69,9 +69,9 @@ void SDLHandler::EndFrame() const
 	}
 }
 
-void SDLHandler::RenderSprite(const SpriteEnum& sprite, const Vector2& dstPoint) const
+void SDLHandler::RenderSprite(const SpriteEnum& sprite, const Vector2& dstPoint, const double& rotation) const
 {
-	toRender.push_back(Sprite({ SDL_Rect(dstPoint.x, dstPoint.y, 32 * zoom, 32 * zoom), sprite}));
+	toRender.push_back(Sprite({ SDL_Rect(dstPoint.x, dstPoint.y, 32 * zoom, 32 * zoom), sprite, rotation }));
 
 	shouldRender = true;
 }

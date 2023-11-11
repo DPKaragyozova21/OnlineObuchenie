@@ -19,7 +19,7 @@ class Machine
 {
 public:
 
-	Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite);
+	Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation);
 	static void SetMap(std::unordered_map<int, Machine*>* machineMap);
 
 	virtual void Tick() = 0;

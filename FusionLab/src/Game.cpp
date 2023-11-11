@@ -17,7 +17,11 @@ Game::Game() :
     sdlHandler({ "FusionLab", resolution, camera.zoom }),
     currentEvent(nullptr),
     state(GameState::IN_GAME),
-    shouldQuit(false)
+    shouldQuit(false),
+    mousePos({ 0, 0 }),
+    mouseButtonDown{0, 0},
+    selectedMachine(MachineType::NONE),
+    machineRotation(0)
 {
     GenerateTerrain();
 }
@@ -77,11 +81,11 @@ void Game::RenderView()
                 case TileType::O2:
                     sprite = sdl::SpriteEnum::TILE_O2;
                 }
-                sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))});
+                sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))}, 0);
 
                 if (machineMap.find(tilePos) != machineMap.end() && machineMap[tilePos])
                 {
-                    sdlHandler.RenderSprite(machineMap[tilePos]->sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom)) });
+                    sdlHandler.RenderSprite(machineMap[tilePos]->sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom)) }, machineMap[tilePos]->rotation * 90);
                 }
             }
         }
@@ -124,7 +128,7 @@ void Game::PlaceMachine()
         case MachineType::MINER:
             if (tiles[tilePos].type != TileType::NONE)
             {
-                machineMap[tilePos] = (Machine*)new Miner(tilePos, tiles[tilePos].type);
+                machineMap[tilePos] = (Machine*)new Miner(tilePos, tiles[tilePos].type, machineRotation);
             }
             break;
 
@@ -184,6 +188,11 @@ void Game::HandleEvent()
             
             case SDLK_3:
                 selectedMachine = MachineType::SPLITTER;
+                break;
+
+            case SDLK_r:
+                machineRotation++;
+                if (machineRotation == 4) machineRotation = 0;
                 break;
             }
             break;

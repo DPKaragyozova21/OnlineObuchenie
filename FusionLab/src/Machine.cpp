@@ -5,8 +5,9 @@ namespace fl
 
 std::unordered_map<int, Machine*>* Machine::machineMap;
 
-Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite) :
-	rotation(0),
+
+Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation) :
+	rotation(rotation),
 	sprite(machineSprite),
 	input{ nullptr, nullptr, nullptr, nullptr },
 	output{ nullptr, nullptr, nullptr, nullptr },
