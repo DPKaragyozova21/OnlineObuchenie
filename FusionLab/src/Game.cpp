@@ -8,7 +8,8 @@
 namespace fl
 {
 
-    Game::Game() :
+
+Game::Game() :
     deltaTime(1000 / FPS),
     frameTimer(deltaTime),
     resolution({ 1280, 720 }),
@@ -36,10 +37,16 @@ void Game::Run()
         
         HandleEvent();
 
+        //TO PUT IN DIFFERENT THREAD
+        for (auto i = machineMap.begin(); i != machineMap.end(); i++)
+        {
+            if(i->second) i->second->Tick();
+        }
+
         RenderView();
         camera.Update();
 
-        std::cout << camera.GetPosition().x << " " << camera.GetPosition().y << std::endl;
+        if (mouseButtonDown[0]) PlaceMachine();
         
         if (1000 / FPS + deltaTime < 0) deltaTime = 0;
         SDL_Delay(1000 / FPS + deltaTime);
@@ -49,19 +56,19 @@ void Game::Run()
 void Game::RenderView()
 {
     static sdl::SpriteEnum sprite;
+    static int tilePos;
     const Bounds2F& camBounds = camera.GetView();
     
-    if (camBounds.x == -1) return;
-
     sdlHandler.StartFrame();
 
     for (int i = -1; i <= camBounds.w; i++)
     {
         for (int j = -1; j <= camBounds.h; j++)
         {
-            if ((int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000)) >= 0 && (int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000)) < 100000000)
+            tilePos = (int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000));
+            if (tilePos >= 0 && tilePos < 100000000)
             {
-                switch (tiles[(int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000))].type)
+                switch (tiles[tilePos].type)
                 {
                 case TileType::NONE:
                     sprite = sdl::SpriteEnum::TILE_NONE;
@@ -71,11 +78,62 @@ void Game::RenderView()
                     sprite = sdl::SpriteEnum::TILE_O2;
                 }
                 sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))});
+
+                if (machineMap.find(tilePos) != machineMap.end() && machineMap[tilePos])
+                {
+                    sdlHandler.RenderSprite(machineMap[tilePos]->sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom)) });
+                }
             }
         }
     }
 
     sdlHandler.EndFrame();
+}
+
+Vector2 Game::GetTileFromMousePos() const
+{
+    static Vector2F tilePos;
+    tilePos = (camera.GetPosition() - ((resolution / 2) / camera.zoom)) + (mousePos / camera.zoom);
+
+    tilePos.x = floor(tilePos.x / 32);
+    tilePos.y = floor(tilePos.y / 32);
+
+    return { (int)tilePos.x, (int)tilePos.y };
+}
+
+void Game::PlaceMachine()
+{
+    static Vector2 tile;
+    static int tilePos;
+    tile = GetTileFromMousePos();
+    tilePos = tile.x + (tile.y * 10000);
+
+    static bool input[4];
+    static bool output[4];
+
+    if (machineMap.find(tilePos) == machineMap.end() || !machineMap[tilePos])
+    {
+        switch (selectedMachine)
+        {
+        case MachineType::NONE:
+            break;
+
+        case MachineType::COVEYOR:
+            break;
+
+        case MachineType::MINER:
+            if (tiles[tilePos].type != TileType::NONE)
+            {
+                machineMap[tilePos] = (Machine*)new Miner(tilePos, tiles[tilePos].type);
+            }
+            break;
+
+        case MachineType::SPLITTER:
+            /*machineMap[tile.x * tile.y * 10000] = new Machine();*/
+            break;
+        }
+    }
+    else return;
 }
 
 void Game::HandleEvent()
@@ -114,6 +172,18 @@ void Game::HandleEvent()
 
             case SDLK_LSHIFT:
                 camera.Sprint(true);
+                break;
+
+            case SDLK_1:
+                selectedMachine = MachineType::COVEYOR;
+                break;
+
+            case SDLK_2:
+                selectedMachine = MachineType::MINER;
+                break;
+            
+            case SDLK_3:
+                selectedMachine = MachineType::SPLITTER;
                 break;
             }
             break;

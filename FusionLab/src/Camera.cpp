@@ -7,7 +7,7 @@ namespace fl
 {
 
 Camera::Camera(const Vector2& windowRes, const float& frameTime) :
-    res(windowRes), deltaTime(frameTime), pos({ 16000, 16000 }), moveDirs(), speed(0.3), zoom(2), moved(true), zoomThread(nullptr), currentlyZooming(false)
+    res(windowRes), deltaTime(frameTime), pos({ 16000, 16000 }), moveDirs(), speed(0.2), zoom(2), moved(true), zoomThread(nullptr), currentlyZooming(false)
 {
     moveDirs[0] = false; moveDirs[1] = false; moveDirs[2] = false; moveDirs[3] = false;
 }
@@ -26,8 +26,6 @@ const Bounds2F& Camera::GetView() const
 
     rect.w = ceil(float(res.x) / (zoom * 32));
     rect.h = ceil(float(res.y) / (zoom * 32));
-
-    if (!moved) rect.x = -1;
 
     return rect;
 }
@@ -95,11 +93,11 @@ void Camera::Update()
     pos.x += ((moveDirs[0] * -1) + (moveDirs[1])) * speed * -deltaTime * (4.5 - zoom);
     pos.y += ((moveDirs[2] * -1) + (moveDirs[3])) * speed * -deltaTime * (4.5 - zoom);
 
-    if (pos.x < res.x / 2) pos.x = res.x / 2;
-    if (pos.y < res.y / 2) pos.y = res.y / 2;
+    if (pos.x < (res.x / 2) / zoom) pos.x = (res.x / 2) / zoom;
+    if (pos.y < (res.y / 2) / zoom) pos.y = (res.y / 2) / zoom;
 
-    if (pos.x + res.x / 2 > 320000) pos.x = 320000 - (res.x / 2);
-    if (pos.y + res.y / 2 > 320000) pos.y = 320000 - (res.y / 2);
+    if (pos.x + res.x / 2 > 32000) pos.x = 32000 - (res.x / 2);
+    if (pos.y + res.y / 2 > 32000) pos.y = 32000 - (res.y / 2);
 
     if (moveDirs[0] || moveDirs[1] || moveDirs[2] || moveDirs[3]) moved = true;
 }

@@ -15,6 +15,46 @@ typedef SDL_FPoint Vector2F;
 typedef SDL_Rect Bounds2;
 typedef SDL_FRect Bounds2F;
 
+inline Vector2F operator+(const Vector2F& num1, const Vector2F& num2)
+{
+	static Vector2F finNum;
+
+	finNum.x = num1.x + num2.x;
+	finNum.y = num1.y + num2.y;
+
+	return finNum;
+}
+
+inline Vector2F operator-(const Vector2F& num1, const Vector2& num2)
+{
+	static Vector2F finNum;
+
+	finNum.x = num1.x - num2.x;
+	finNum.y = num1.y - num2.y;
+
+	return finNum;
+}
+
+inline Vector2F operator/(const Vector2F& num1, const float& num2)
+{
+	static Vector2F finNum;
+
+	finNum.x = num1.x / num2;
+	finNum.y = num1.y / num2;
+
+	return finNum;
+}
+
+inline Vector2 operator/(const Vector2& num1, const float& num2)
+{
+	static Vector2 finNum;
+
+	finNum.x = num1.x / num2;
+	finNum.y = num1.y / num2;
+
+	return finNum;
+}
+
 namespace fl::sdl
 {
 
@@ -22,6 +62,7 @@ enum class SpriteEnum : uint16_t
 {
 	TILE_NONE,
 	TILE_O2,
+	MACHINE_MINER
 };
 
 struct Sprite

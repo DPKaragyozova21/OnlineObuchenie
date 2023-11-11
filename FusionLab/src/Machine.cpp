@@ -3,6 +3,29 @@
 namespace fl
 {
 
+std::unordered_map<int, Machine*>* Machine::machineMap;
+
+Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite) :
+	rotation(0),
+	sprite(machineSprite),
+	input{ nullptr, nullptr, nullptr, nullptr },
+	output{ nullptr, nullptr, nullptr, nullptr },
+	storage(),
+	transferStorage(),
+	canInput{ inputSides[0], inputSides[1], inputSides[2], inputSides[3] },
+	canOutput{ outputSides[0], outputSides[1], outputSides[2], outputSides[3] },
+	pos(position),
+	speed(machineSpeed),
+	placedOn(tile)
+{
+
+}
+
+void Machine::SetMap(std::unordered_map<int, Machine*>* map)
+{
+	machineMap = map;
+}
+
 void Machine::UpdateIO()
 {
 	for (int i = 0; i < 4; i++)
@@ -11,92 +34,92 @@ void Machine::UpdateIO()
 		input[i] = nullptr;
 	}
 
-	if (!input[(int)Side::LEFT] && canInput[(int)Side::LEFT] && (machineMap.find(pos - 1) != machineMap.end()))
+	if (!input[(int)Side::LEFT] && canInput[(int)Side::LEFT] && (machineMap[0].find(pos - 1) != machineMap[0].end()))
 	{
-		if (!machineMap[pos - 1])
+		if (!machineMap[0][pos - 1])
 		{
-			if (machineMap[pos - 1]->canOutput[(int)Side::RIGHT] && !machineMap[pos - 1]->output[(int)Side::RIGHT])
+			if (machineMap[0][pos - 1]->canOutput[(int)Side::RIGHT] && !machineMap[0][pos - 1]->output[(int)Side::RIGHT])
 			{
-				input[(int)Side::LEFT] = machineMap[pos - 1];
-				machineMap[pos - 1]->output[(int)Side::RIGHT] = this;
+				input[(int)Side::LEFT] = machineMap[0][pos - 1];
+				machineMap[0][pos - 1]->output[(int)Side::RIGHT] = this;
 			}
 		}
 	}
-	if (!input[(int)Side::RIGHT] && canInput[(int)Side::RIGHT] && (machineMap.find(pos + 1) != machineMap.end()))
+	if (!input[(int)Side::RIGHT] && canInput[(int)Side::RIGHT] && (machineMap[0].find(pos + 1) != machineMap[0].end()))
 	{
-		if (!machineMap[pos + 1])
+		if (!machineMap[0][pos + 1])
 		{
-			if (machineMap[pos + 1]->canOutput[(int)Side::LEFT] && !machineMap[pos + 1]->output[(int)Side::LEFT])
+			if (machineMap[0][pos + 1]->canOutput[(int)Side::LEFT] && !machineMap[0][pos + 1]->output[(int)Side::LEFT])
 			{
-				input[(int)Side::RIGHT] = machineMap[pos + 1];
-				machineMap[pos + 1]->output[(int)Side::LEFT] = this;
+				input[(int)Side::RIGHT] = machineMap[0][pos + 1];
+				machineMap[0][pos + 1]->output[(int)Side::LEFT] = this;
 			}
 		}
 	}
-	if (!input[(int)Side::UP] && canInput[(int)Side::UP] && (machineMap.find(pos - 10000) != machineMap.end()))
+	if (!input[(int)Side::UP] && canInput[(int)Side::UP] && (machineMap[0].find(pos - 10000) != machineMap[0].end()))
 	{
-		if (!machineMap[pos - 10000])
+		if (!machineMap[0][pos - 10000])
 		{
-			if (machineMap[pos - 10000]->canOutput[(int)Side::DOWN] && !machineMap[pos - 10000]->output[(int)Side::DOWN])
+			if (machineMap[0][pos - 10000]->canOutput[(int)Side::DOWN] && !machineMap[0][pos - 10000]->output[(int)Side::DOWN])
 			{
-				input[(int)Side::UP] = machineMap[pos - 10000];
-				machineMap[pos - 10000]->output[(int)Side::DOWN] = this;
+				input[(int)Side::UP] = machineMap[0][pos - 10000];
+				machineMap[0][pos - 10000]->output[(int)Side::DOWN] = this;
 			}
 		}
 	}
-	else if (!input[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap.find(pos + 10000) != machineMap.end()))
+	else if (!input[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()))
 	{
-		if (!machineMap[pos + 10000])
+		if (!machineMap[0][pos + 10000])
 		{
-			if (machineMap[pos + 10000]->canOutput[(int)Side::UP] && !machineMap[pos + 10000]->output[(int)Side::UP])
+			if (machineMap[0][pos + 10000]->canOutput[(int)Side::UP] && !machineMap[0][pos + 10000]->output[(int)Side::UP])
 			{
-				input[(int)Side::DOWN] = machineMap[pos + 10000];
-				machineMap[pos + 10000]->output[(int)Side::UP] = this;
+				input[(int)Side::DOWN] = machineMap[0][pos + 10000];
+				machineMap[0][pos + 10000]->output[(int)Side::UP] = this;
 			}
 		}
 	}
 
-	if (!output[(int)Side::LEFT] && canInput[(int)Side::LEFT] && (machineMap.find(pos - 1) != machineMap.end()))
+	if (!output[(int)Side::LEFT] && canInput[(int)Side::LEFT] && (machineMap[0].find(pos - 1) != machineMap[0].end()))
 	{
-		if (!machineMap[pos - 1])
+		if (!machineMap[0][pos - 1])
 		{
-			if (machineMap[pos - 1]->canOutput[(int)Side::RIGHT] && !machineMap[pos - 1]->output[(int)Side::RIGHT])
+			if (machineMap[0][pos - 1]->canOutput[(int)Side::RIGHT] && !machineMap[0][pos - 1]->output[(int)Side::RIGHT])
 			{
-				output[(int)Side::LEFT] = machineMap[pos - 1];
-				machineMap[pos - 1]->output[(int)Side::RIGHT] = this;
+				output[(int)Side::LEFT] = machineMap[0][pos - 1];
+				machineMap[0][pos - 1]->output[(int)Side::RIGHT] = this;
 			}
 		}
 	}
-	if (!output[(int)Side::RIGHT] && canInput[(int)Side::RIGHT] && (machineMap.find(pos + 1) != machineMap.end()))
+	if (!output[(int)Side::RIGHT] && canInput[(int)Side::RIGHT] && (machineMap[0].find(pos + 1) != machineMap[0].end()))
 	{
-		if (!machineMap[pos + 1])
+		if (!machineMap[0][pos + 1])
 		{
-			if (machineMap[pos + 1]->canOutput[(int)Side::LEFT] && !machineMap[pos + 1]->output[(int)Side::LEFT])
+			if (machineMap[0][pos + 1]->canOutput[(int)Side::LEFT] && !machineMap[0][pos + 1]->output[(int)Side::LEFT])
 			{
-				output[(int)Side::RIGHT] = machineMap[pos + 1];
-				machineMap[pos + 1]->output[(int)Side::LEFT] = this;
+				output[(int)Side::RIGHT] = machineMap[0][pos + 1];
+				machineMap[0][pos + 1]->output[(int)Side::LEFT] = this;
 			}
 		}
 	}
-	if (!output[(int)Side::UP] && canInput[(int)Side::UP] && (machineMap.find(pos - 10000) != machineMap.end()))
+	if (!output[(int)Side::UP] && canInput[(int)Side::UP] && (machineMap[0].find(pos - 10000) != machineMap[0].end()))
 	{
-		if (!machineMap[pos - 10000])
+		if (!machineMap[0][pos - 10000])
 		{
-			if (machineMap[pos - 10000]->canOutput[(int)Side::DOWN] && !machineMap[pos - 10000]->output[(int)Side::DOWN])
+			if (machineMap[0][pos - 10000]->canOutput[(int)Side::DOWN] && !machineMap[0][pos - 10000]->output[(int)Side::DOWN])
 			{
-				output[(int)Side::UP] = machineMap[pos - 10000];
-				machineMap[pos - 10000]->output[(int)Side::DOWN] = this;
+				output[(int)Side::UP] = machineMap[0][pos - 10000];
+				machineMap[0][pos - 10000]->output[(int)Side::DOWN] = this;
 			}
 		}
 	}
-	else if (!output[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap.find(pos + 10000) != machineMap.end()))
+	else if (!output[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()))
 	{
-		if (!machineMap[pos + 10000])
+		if (!machineMap[0][pos + 10000])
 		{
-			if (machineMap[pos + 10000]->canOutput[(int)Side::UP] && !machineMap[pos + 10000]->output[(int)Side::UP])
+			if (machineMap[0][pos + 10000]->canOutput[(int)Side::UP] && !machineMap[0][pos + 10000]->output[(int)Side::UP])
 			{
-				output[(int)Side::DOWN] = machineMap[pos + 10000];
-				machineMap[pos + 10000]->output[(int)Side::UP] = this;
+				output[(int)Side::DOWN] = machineMap[0][pos + 10000];
+				machineMap[0][pos + 10000]->output[(int)Side::UP] = this;
 			}
 		}
 	}

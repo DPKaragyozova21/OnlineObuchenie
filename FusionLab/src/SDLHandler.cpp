@@ -9,7 +9,7 @@ inline std::vector<Sprite> toRender;
 
 bool compareSprites(const Sprite& sprite1, const Sprite& sprite2)
 {
-	return uint16_t(sprite1.sprite) > uint16_t(sprite2.sprite);
+	return uint16_t(sprite1.sprite) < uint16_t(sprite2.sprite);
 }
 
 SDLHandler::SDLHandler(const char* title, const Vector2& res, const float& cameraZoom) :

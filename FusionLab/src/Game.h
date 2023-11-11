@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "Camera.h"
 #include "Timer.h"
+#include "./Machines/Miner.h"
 #include <array>
 
 namespace fl
@@ -29,11 +30,15 @@ private:
 
     void RenderView();
 
+    void PlaceMachine();
+
     void HandleEvent();
 
     void GenerateTerrain();
 
-private:
+    Vector2 GetTileFromMousePos() const;
+
+protected:
 
     float deltaTime;
     Timer frameTimer;
@@ -51,6 +56,10 @@ private:
 
     Vector2F mousePos;
     bool mouseButtonDown[2];
+
+    MachineType selectedMachine;
+    
+    std::unordered_map<int, Machine*> machineMap;
 
     std::array<Tile, 100000000> tiles;
     
