@@ -32,16 +32,23 @@ private:
 
     void PlaceMachine();
 
+    void DeleteMachine();
+
     void HandleEvent();
 
     void GenerateTerrain();
 
     Vector2 GetTileFromMousePos() const;
 
+    void MachineLogicLoop();
+
 protected:
 
-    float deltaTime;
+    float fDeltaTime;
     Timer frameTimer;
+
+    float lDeltaTime;
+    Timer logicTimer;
 
     Vector2 resolution;
 
@@ -52,12 +59,15 @@ protected:
 
     GameState state;
 
-    bool shouldQuit;
+    std::atomic<bool> shouldQuit;
 
     Vector2F mousePos;
     bool mouseButtonDown[2];
 
     MachineType selectedMachine;
+    uint8_t machineRotation;
+
+    uint8_t tick;
     
     std::unordered_map<int, Machine*> machineMap;
 

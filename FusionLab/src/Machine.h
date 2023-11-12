@@ -19,7 +19,7 @@ class Machine
 {
 public:
 
-	Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite);
+	Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation);
 	static void SetMap(std::unordered_map<int, Machine*>* machineMap);
 
 	virtual void Tick() = 0;
@@ -38,6 +38,8 @@ public:
 	static std::unordered_map<int, Machine*>* machineMap;
 
 	sdl::SpriteEnum sprite;
+
+	uint8_t speed;
 protected:
 
 	Machine* input[4];
@@ -50,7 +52,6 @@ protected:
 	bool canOutput[4];
 
 	int pos;
-	uint8_t speed;
 	TileType placedOn;
 
 };

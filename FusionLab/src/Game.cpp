@@ -10,14 +10,21 @@ namespace fl
 
 
 Game::Game() :
-    deltaTime(1000 / FPS),
-    frameTimer(deltaTime),
+    fDeltaTime(1000 / FPS),
+    frameTimer(fDeltaTime),
+    lDeltaTime(0),
+    logicTimer(lDeltaTime),
     resolution({ 1280, 720 }),
-    camera(resolution, deltaTime),
+    camera(resolution, fDeltaTime),
     sdlHandler({ "FusionLab", resolution, camera.zoom }),
     currentEvent(nullptr),
     state(GameState::IN_GAME),
-    shouldQuit(false)
+    shouldQuit(false),
+    mousePos({ 0, 0 }),
+    mouseButtonDown{0, 0},
+    selectedMachine(MachineType::NONE),
+    machineRotation(0),
+    tick(0)
 {
     GenerateTerrain();
 }
@@ -29,7 +36,9 @@ Game::~Game()
 
 void Game::Run()
 {
-    while (!shouldQuit)
+    std::jthread* logicThread = new std::jthread(&Game::MachineLogicLoop, this);
+
+    while (!shouldQuit.load())
     {
         frameTimer.GetDeltaTime();
 
@@ -37,19 +46,29 @@ void Game::Run()
         
         HandleEvent();
 
-        //TO PUT IN DIFFERENT THREAD
-        for (auto i = machineMap.begin(); i != machineMap.end(); i++)
-        {
-            if(i->second) i->second->Tick();
-        }
-
         RenderView();
         camera.Update();
 
         if (mouseButtonDown[0]) PlaceMachine();
         
-        if (1000 / FPS + deltaTime < 0) deltaTime = 0;
-        SDL_Delay(1000 / FPS + deltaTime);
+        std::this_thread::sleep_for(std::chrono::milliseconds(int(16 - abs(fDeltaTime))));
+    }
+}
+
+void Game::MachineLogicLoop()
+{
+    while (!shouldQuit.load())
+    {
+
+        for (auto i = machineMap.begin(); i != machineMap.end(); i++)
+        {
+            if (i->second && !(tick % (i->second->speed + 1))) i->second->Tick();
+        }
+
+        tick++;
+        if (tick > 60) tick = 1;
+        logicTimer.GetDeltaTime();
+        std::this_thread::sleep_for(std::chrono::milliseconds(int(16)));
     }
 }
 
@@ -77,11 +96,11 @@ void Game::RenderView()
                 case TileType::O2:
                     sprite = sdl::SpriteEnum::TILE_O2;
                 }
-                sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))});
+                sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))}, 0);
 
                 if (machineMap.find(tilePos) != machineMap.end() && machineMap[tilePos])
                 {
-                    sdlHandler.RenderSprite(machineMap[tilePos]->sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom)) });
+                    sdlHandler.RenderSprite(machineMap[tilePos]->sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom)) }, machineMap[tilePos]->rotation * 90);
                 }
             }
         }
@@ -124,7 +143,7 @@ void Game::PlaceMachine()
         case MachineType::MINER:
             if (tiles[tilePos].type != TileType::NONE)
             {
-                machineMap[tilePos] = (Machine*)new Miner(tilePos, tiles[tilePos].type);
+                machineMap[tilePos] = (Machine*)new Miner(tilePos, tiles[tilePos].type, machineRotation);
             }
             break;
 
@@ -184,6 +203,11 @@ void Game::HandleEvent()
             
             case SDLK_3:
                 selectedMachine = MachineType::SPLITTER;
+                break;
+
+            case SDLK_r:
+                machineRotation++;
+                if (machineRotation == 4) machineRotation = 0;
                 break;
             }
             break;

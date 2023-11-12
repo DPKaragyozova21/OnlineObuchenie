@@ -6,7 +6,7 @@
 namespace fl
 {
 
-Camera::Camera(const Vector2& windowRes, const float& frameTime) :
+Camera::Camera(const Vector2& windowRes, float& frameTime) :
     res(windowRes), deltaTime(frameTime), pos({ 16000, 16000 }), moveDirs(), speed(0.2), zoom(2), moved(true), zoomThread(nullptr), currentlyZooming(false)
 {
     moveDirs[0] = false; moveDirs[1] = false; moveDirs[2] = false; moveDirs[3] = false;
@@ -90,8 +90,8 @@ void Camera::Update()
 
     moved = false;
 
-    pos.x += ((moveDirs[0] * -1) + (moveDirs[1])) * speed * -deltaTime * (4.5 - zoom);
-    pos.y += ((moveDirs[2] * -1) + (moveDirs[3])) * speed * -deltaTime * (4.5 - zoom);
+    pos.x += ((moveDirs[0] * -1) + (moveDirs[2])) * speed * -deltaTime * (4.5 - zoom);
+    pos.y += ((moveDirs[1] * -1) + (moveDirs[3])) * speed * -deltaTime * (4.5 - zoom);
 
     if (pos.x < (res.x / 2) / zoom) pos.x = (res.x / 2) / zoom;
     if (pos.y < (res.y / 2) / zoom) pos.y = (res.y / 2) / zoom;

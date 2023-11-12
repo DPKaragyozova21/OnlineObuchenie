@@ -9,8 +9,8 @@ namespace fl
 enum class Direction : uint8_t
 {
     LEFT,
-    RIGHT,
     UP,
+    RIGHT,
     DOWN
 };
 
@@ -20,7 +20,7 @@ class Camera
 {
 public:
 
-    Camera(const Vector2& windowRes, const float& frameTime);
+    Camera(const Vector2& windowRes, float& frameTime);
 
     const Vector2F& GetPosition() const;
     
@@ -45,7 +45,7 @@ private:
 private:
     
     Vector2 res;
-    const float& deltaTime;
+    float& deltaTime;
 
     Vector2F pos;
 

@@ -5,9 +5,11 @@ namespace fl
 
 std::unordered_map<int, Machine*>* Machine::machineMap;
 
-Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite) :
-	rotation(0),
+
+Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation) :
+	rotation(rotation),
 	sprite(machineSprite),
+	speed(machineSpeed),
 	input{ nullptr, nullptr, nullptr, nullptr },
 	output{ nullptr, nullptr, nullptr, nullptr },
 	storage(),
@@ -15,7 +17,6 @@ Machine::Machine(const bool inputSides[], const bool outputSides[], const int& p
 	canInput{ inputSides[0], inputSides[1], inputSides[2], inputSides[3] },
 	canOutput{ outputSides[0], outputSides[1], outputSides[2], outputSides[3] },
 	pos(position),
-	speed(machineSpeed),
 	placedOn(tile)
 {
 
@@ -67,7 +68,7 @@ void Machine::UpdateIO()
 			}
 		}
 	}
-	else if (!input[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()))
+	if (!input[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()))
 	{
 		if (!machineMap[0][pos + 10000])
 		{
@@ -112,7 +113,7 @@ void Machine::UpdateIO()
 			}
 		}
 	}
-	else if (!output[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()))
+	if (!output[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()))
 	{
 		if (!machineMap[0][pos + 10000])
 		{
@@ -147,20 +148,20 @@ void Machine::TransferItems()
 void Machine::Rotate()
 {
 	static bool tempIn, tempOut;
-	tempIn = canInput[0];
-	tempOut = canOutput[0];
-
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < rotation; i++)
 	{
-		canInput[i] = canInput[i + 1];
-		canOutput[i] = canOutput[i + 1];
+		tempIn = canInput[3];
+		tempOut = canOutput[3];
+
+		for (int j = 3; j > 0; j--)
+		{
+			canInput[j] = canInput[j - 1];
+			canOutput[j] = canOutput[j - 1];
+		}
+
+		canInput[0] = tempIn;
+		canOutput[0] = tempOut;
 	}
-
-	canInput[3] = tempIn;
-	canOutput[3] = tempOut;
-
-	if (rotation == 3) rotation = 0;
-	else rotation++;
 }
 
 }
