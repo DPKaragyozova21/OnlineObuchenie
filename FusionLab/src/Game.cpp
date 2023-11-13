@@ -27,6 +27,7 @@ Game::Game() :
     tick(0)
 {
     GenerateTerrain();
+    Machine::SetMap(&machineMap);
 }
 
 Game::~Game()
@@ -48,29 +49,11 @@ void Game::Run()
 
         RenderView();
         camera.Update();
-
-        if (mouseButtonDown[0]) PlaceMachine();
         
         std::this_thread::sleep_for(std::chrono::milliseconds(int(16 - abs(fDeltaTime))));
     }
 }
 
-void Game::MachineLogicLoop()
-{
-    while (!shouldQuit.load())
-    {
-
-        for (auto i = machineMap.begin(); i != machineMap.end(); i++)
-        {
-            if (i->second && !(tick % (i->second->speed + 1))) i->second->Tick();
-        }
-
-        tick++;
-        if (tick > 60) tick = 1;
-        logicTimer.GetDeltaTime();
-        std::this_thread::sleep_for(std::chrono::milliseconds(int(16)));
-    }
-}
 
 void Game::RenderView()
 {
@@ -106,6 +89,29 @@ void Game::RenderView()
         }
     }
 
+    static sdl::SpriteEnum machineGhost;
+
+    switch (selectedMachine)
+    {
+    case MachineType::NONE:
+        machineGhost = sdl::SpriteEnum::NONE;
+        break;
+
+    case MachineType::CONVEYOR:
+        machineGhost = sdl::SpriteEnum::GHOST_CONVEYOR;
+        break;
+
+    case MachineType::MINER:
+        machineGhost = sdl::SpriteEnum::GHOST_MINER;
+        break;
+
+    case MachineType::SPLITTER:
+        machineGhost = sdl::SpriteEnum::NONE;
+        break;
+    }
+
+    if (selectedMachine != MachineType::NONE) sdlHandler.RenderSprite(machineGhost, { int(mousePos.x - (16 * camera.zoom)), int(mousePos.y - (16 * camera.zoom)) }, machineRotation * 90);
+
     sdlHandler.EndFrame();
 }
 
@@ -127,9 +133,6 @@ void Game::PlaceMachine()
     tile = GetTileFromMousePos();
     tilePos = tile.x + (tile.y * 10000);
 
-    static bool input[4];
-    static bool output[4];
-
     if (machineMap.find(tilePos) == machineMap.end() || !machineMap[tilePos])
     {
         switch (selectedMachine)
@@ -137,7 +140,8 @@ void Game::PlaceMachine()
         case MachineType::NONE:
             break;
 
-        case MachineType::COVEYOR:
+        case MachineType::CONVEYOR:
+            machineMap[tilePos] = (Machine*)new Conveyor(tilePos, tiles[tilePos].type, machineRotation);
             break;
 
         case MachineType::MINER:
@@ -153,6 +157,57 @@ void Game::PlaceMachine()
         }
     }
     else return;
+}
+
+void Game::DeleteMachine()
+{
+    static Vector2 tile;
+    static int tilePos;
+    tile = GetTileFromMousePos();
+    tilePos = tile.x + (tile.y * 10000);
+
+    if (machineMap.find(tilePos) != machineMap.end())
+    {
+        delete machineMap[tilePos];
+        machineMap.erase(tilePos);
+        if (machineMap.find(tilePos - 1) != machineMap.end() && !machineMap[tilePos - 1])
+        {
+            machineMap[tilePos - 1]->UpdateIO();
+        }
+        if (machineMap.find(tilePos + 1) != machineMap.end() && !machineMap[tilePos + 1])
+        {
+            machineMap[tilePos + 1]->UpdateIO();
+        }
+        if (machineMap.find(tilePos - 10000) != machineMap.end() && !machineMap[tilePos - 10000])
+        {
+            machineMap[tilePos - 10000]->UpdateIO();
+        }
+        if (machineMap.find(tilePos + 10000) != machineMap.end() && !machineMap[tilePos + 10000])
+        {
+            machineMap[tilePos + 10000]->UpdateIO();
+        }
+    }
+}
+
+void Game::MachineLogicLoop()
+{
+    while (!shouldQuit.load())
+    {
+
+        for (auto i = machineMap.begin(); i != machineMap.end(); i++)
+        {
+            if (i->second && !(tick % (i->second->speed + 1))) i->second->Tick();
+        }
+        for (auto i = machineMap.begin(); i != machineMap.end(); i++)
+        {
+            if (i->second && !(tick % (i->second->speed + 1))) i->second->TransferItems();
+        }
+
+        tick++;
+        if (tick > 60) tick = 1;
+        logicTimer.GetDeltaTime();
+        std::this_thread::sleep_for(std::chrono::milliseconds(int(16)));
+    }
 }
 
 void Game::HandleEvent()
@@ -194,15 +249,18 @@ void Game::HandleEvent()
                 break;
 
             case SDLK_1:
-                selectedMachine = MachineType::COVEYOR;
+                if (selectedMachine == MachineType::CONVEYOR) selectedMachine = MachineType::NONE;
+                else selectedMachine = MachineType::CONVEYOR;
                 break;
 
             case SDLK_2:
-                selectedMachine = MachineType::MINER;
+                if (selectedMachine == MachineType::MINER) selectedMachine = MachineType::NONE;
+                else selectedMachine = MachineType::MINER;
                 break;
             
             case SDLK_3:
-                selectedMachine = MachineType::SPLITTER;
+                if (selectedMachine == MachineType::SPLITTER) selectedMachine = MachineType::NONE;
+                else selectedMachine = MachineType::SPLITTER;
                 break;
 
             case SDLK_r:
@@ -254,8 +312,11 @@ void Game::HandleEvent()
             if (currentEvent->button.button == SDL_BUTTON_LEFT) mouseButtonDown[0] = false;
             if (currentEvent->button.button == SDL_BUTTON_RIGHT) mouseButtonDown[1] = false;
         }
+        
+        if (mouseButtonDown[0] && mouseButtonDown[1]) break;
+        if (mouseButtonDown[0]) PlaceMachine();
+        if (mouseButtonDown[1]) DeleteMachine();
         break;
-
     }
 }
 

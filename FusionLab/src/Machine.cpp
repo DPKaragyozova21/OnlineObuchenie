@@ -1,10 +1,11 @@
 #include "Machine.h"
 
+#include <iostream>
+
 namespace fl
 {
 
 std::unordered_map<int, Machine*>* Machine::machineMap;
-
 
 Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation) :
 	rotation(rotation),
@@ -22,6 +23,19 @@ Machine::Machine(const bool inputSides[], const bool outputSides[], const int& p
 
 }
 
+Machine::~Machine()
+{
+	for (auto i : storage)
+	{
+		delete i;
+	}
+	
+	for (auto i : transferStorage)
+	{
+		delete i;
+	}
+}
+
 void Machine::SetMap(std::unordered_map<int, Machine*>* map)
 {
 	machineMap = map;
@@ -35,93 +49,84 @@ void Machine::UpdateIO()
 		input[i] = nullptr;
 	}
 
-	if (!input[(int)Side::LEFT] && canInput[(int)Side::LEFT] && (machineMap[0].find(pos - 1) != machineMap[0].end()))
+	std::cout << canInput[(int)Side::LEFT] << " " << (machineMap[0].find(pos - 1) != machineMap[0].end()) << std::endl;
+	if (canInput[(int)Side::LEFT] && (machineMap[0].find(pos - 1) != machineMap[0].end()) && machineMap[0][pos - 1])
 	{
-		if (!machineMap[0][pos - 1])
+		std::cout << "inputLeft";
+		if (machineMap[0][pos - 1]->canOutput[(int)Side::RIGHT] && !machineMap[0][pos - 1]->output[(int)Side::RIGHT])
 		{
-			if (machineMap[0][pos - 1]->canOutput[(int)Side::RIGHT] && !machineMap[0][pos - 1]->output[(int)Side::RIGHT])
-			{
-				input[(int)Side::LEFT] = machineMap[0][pos - 1];
-				machineMap[0][pos - 1]->output[(int)Side::RIGHT] = this;
-			}
+			input[(int)Side::LEFT] = machineMap[0][pos - 1];
+			machineMap[0][pos - 1]->output[(int)Side::RIGHT] = this;
 		}
 	}
-	if (!input[(int)Side::RIGHT] && canInput[(int)Side::RIGHT] && (machineMap[0].find(pos + 1) != machineMap[0].end()))
+	std::cout << canInput[(int)Side::RIGHT] << " " << (machineMap[0].find(pos + 1) != machineMap[0].end()) << std::endl;
+	if (canInput[(int)Side::RIGHT] && (machineMap[0].find(pos + 1) != machineMap[0].end()) && machineMap[0][pos + 1])
 	{
-		if (!machineMap[0][pos + 1])
+		std::cout << "inputRight";
+		if (machineMap[0][pos + 1]->canOutput[(int)Side::LEFT] && !machineMap[0][pos + 1]->output[(int)Side::LEFT])
 		{
-			if (machineMap[0][pos + 1]->canOutput[(int)Side::LEFT] && !machineMap[0][pos + 1]->output[(int)Side::LEFT])
-			{
-				input[(int)Side::RIGHT] = machineMap[0][pos + 1];
-				machineMap[0][pos + 1]->output[(int)Side::LEFT] = this;
-			}
+			input[(int)Side::RIGHT] = machineMap[0][pos + 1];
+			machineMap[0][pos + 1]->output[(int)Side::LEFT] = this;
 		}
 	}
-	if (!input[(int)Side::UP] && canInput[(int)Side::UP] && (machineMap[0].find(pos - 10000) != machineMap[0].end()))
+	std::cout << canInput[(int)Side::UP] << " " << (machineMap[0].find(pos - 10000) != machineMap[0].end()) << std::endl;
+	if (canInput[(int)Side::UP] && (machineMap[0].find(pos - 10000) != machineMap[0].end()) && machineMap[0][pos - 10000])
 	{
-		if (!machineMap[0][pos - 10000])
+		std::cout << "inputUp";
+		if (machineMap[0][pos - 10000]->canOutput[(int)Side::DOWN] && !machineMap[0][pos - 10000]->output[(int)Side::DOWN])
 		{
-			if (machineMap[0][pos - 10000]->canOutput[(int)Side::DOWN] && !machineMap[0][pos - 10000]->output[(int)Side::DOWN])
-			{
-				input[(int)Side::UP] = machineMap[0][pos - 10000];
-				machineMap[0][pos - 10000]->output[(int)Side::DOWN] = this;
-			}
+			input[(int)Side::UP] = machineMap[0][pos - 10000];
+			machineMap[0][pos - 10000]->output[(int)Side::DOWN] = this;
 		}
 	}
-	if (!input[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()))
+	std::cout << canInput[(int)Side::DOWN] << " " << (machineMap[0].find(pos + 10000) != machineMap[0].end()) << std::endl;
+	if (canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()) && machineMap[0][pos + 10000])
 	{
-		if (!machineMap[0][pos + 10000])
+		std::cout << "inputDown";
+		if (machineMap[0][pos + 10000]->canOutput[(int)Side::UP] && !machineMap[0][pos + 10000]->output[(int)Side::UP])
 		{
-			if (machineMap[0][pos + 10000]->canOutput[(int)Side::UP] && !machineMap[0][pos + 10000]->output[(int)Side::UP])
-			{
-				input[(int)Side::DOWN] = machineMap[0][pos + 10000];
-				machineMap[0][pos + 10000]->output[(int)Side::UP] = this;
-			}
+			input[(int)Side::DOWN] = machineMap[0][pos + 10000];
+			machineMap[0][pos + 10000]->output[(int)Side::UP] = this;
 		}
 	}
 
-	if (!output[(int)Side::LEFT] && canInput[(int)Side::LEFT] && (machineMap[0].find(pos - 1) != machineMap[0].end()))
+	std::cout << canOutput[(int)Side::LEFT] << " " << (machineMap[0].find(pos - 1) != machineMap[0].end()) << std::endl;
+	if (canOutput[(int)Side::LEFT] && (machineMap[0].find(pos - 1) != machineMap[0].end()) && machineMap[0][pos - 1])
 	{
-		if (!machineMap[0][pos - 1])
+		if (machineMap[0][pos - 1]->canInput[(int)Side::RIGHT] && !machineMap[0][pos - 1]->output[(int)Side::RIGHT])
 		{
-			if (machineMap[0][pos - 1]->canOutput[(int)Side::RIGHT] && !machineMap[0][pos - 1]->output[(int)Side::RIGHT])
-			{
-				output[(int)Side::LEFT] = machineMap[0][pos - 1];
-				machineMap[0][pos - 1]->output[(int)Side::RIGHT] = this;
-			}
+			output[(int)Side::LEFT] = machineMap[0][pos - 1];
+			machineMap[0][pos - 1]->output[(int)Side::RIGHT] = this;
 		}
 	}
-	if (!output[(int)Side::RIGHT] && canInput[(int)Side::RIGHT] && (machineMap[0].find(pos + 1) != machineMap[0].end()))
+	std::cout << canOutput[(int)Side::RIGHT] << " " << (machineMap[0].find(pos + 1) != machineMap[0].end()) << std::endl;
+	if (canOutput[(int)Side::RIGHT] && (machineMap[0].find(pos + 1) != machineMap[0].end()) && machineMap[0][pos + 1])
 	{
-		if (!machineMap[0][pos + 1])
+		std::cout << "outputRight";
+		if (machineMap[0][pos + 1]->canInput[(int)Side::LEFT] && !machineMap[0][pos + 1]->output[(int)Side::LEFT])
 		{
-			if (machineMap[0][pos + 1]->canOutput[(int)Side::LEFT] && !machineMap[0][pos + 1]->output[(int)Side::LEFT])
-			{
-				output[(int)Side::RIGHT] = machineMap[0][pos + 1];
-				machineMap[0][pos + 1]->output[(int)Side::LEFT] = this;
-			}
+			output[(int)Side::RIGHT] = machineMap[0][pos + 1];
+			machineMap[0][pos + 1]->output[(int)Side::LEFT] = this;
 		}
 	}
-	if (!output[(int)Side::UP] && canInput[(int)Side::UP] && (machineMap[0].find(pos - 10000) != machineMap[0].end()))
+	std::cout << canOutput[(int)Side::UP] << " " << (machineMap[0].find(pos - 10000) != machineMap[0].end()) << std::endl;
+	if (canOutput[(int)Side::UP] && (machineMap[0].find(pos - 10000) != machineMap[0].end()) && machineMap[0][pos - 10000])
 	{
-		if (!machineMap[0][pos - 10000])
+		std::cout << "outputUp";
+		if (machineMap[0][pos - 10000]->canInput[(int)Side::DOWN] && !machineMap[0][pos - 10000]->output[(int)Side::DOWN])
 		{
-			if (machineMap[0][pos - 10000]->canOutput[(int)Side::DOWN] && !machineMap[0][pos - 10000]->output[(int)Side::DOWN])
-			{
-				output[(int)Side::UP] = machineMap[0][pos - 10000];
-				machineMap[0][pos - 10000]->output[(int)Side::DOWN] = this;
-			}
+			output[(int)Side::UP] = machineMap[0][pos - 10000];
+			machineMap[0][pos - 10000]->output[(int)Side::DOWN] = this;
 		}
 	}
-	if (!output[(int)Side::DOWN] && canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()))
+	std::cout << canOutput[(int)Side::DOWN] << " " << (machineMap[0].find(pos + 10000) != machineMap[0].end()) << std::endl;
+	if (canOutput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()) && machineMap[0][pos + 10000])
 	{
-		if (!machineMap[0][pos + 10000])
+		std::cout << "outputDown";
+		if (machineMap[0][pos + 10000]->canInput[(int)Side::UP] && !machineMap[0][pos + 10000]->output[(int)Side::UP])
 		{
-			if (machineMap[0][pos + 10000]->canOutput[(int)Side::UP] && !machineMap[0][pos + 10000]->output[(int)Side::UP])
-			{
-				output[(int)Side::DOWN] = machineMap[0][pos + 10000];
-				machineMap[0][pos + 10000]->output[(int)Side::UP] = this;
-			}
+			output[(int)Side::DOWN] = machineMap[0][pos + 10000];
+			machineMap[0][pos + 10000]->output[(int)Side::UP] = this;
 		}
 	}
 }
@@ -162,6 +167,11 @@ void Machine::Rotate()
 		canInput[0] = tempIn;
 		canOutput[0] = tempOut;
 	}
+}
+
+void Machine::AddToTransferQueue(int* compound)
+{
+	transferStorage.push_back(compound);
 }
 
 }

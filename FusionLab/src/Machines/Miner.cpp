@@ -13,6 +13,8 @@ Miner::Miner(const int& position, const TileType& tile, const uint8_t& rotation)
 {
 	Rotate();
 	UpdateIO();
+	
+	std::cout << std::endl << position;
 }
 
 void Miner::Tick()
@@ -20,7 +22,17 @@ void Miner::Tick()
 	switch (placedOn)
 	{
 	case TileType::O2:
+		AddToTransferQueue(new int(2));
 		break;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (output[i] && !storage.empty())
+		{
+			output[i]->AddToTransferQueue(storage.back());
+			storage.pop_back();
+		}
 	}
 }
 

@@ -60,9 +60,15 @@ namespace fl::sdl
 
 enum class SpriteEnum : uint16_t
 {
+	NONE,
 	TILE_NONE,
 	TILE_O2,
-	MACHINE_MINER
+	MACHINE_MINER,
+	MACHINE_CONVEYOR,
+	MACHINE_CONVEYOR_LEFT,
+	MACHINE_CONVEYOR_RIGHT,
+	GHOST_MINER,
+	GHOST_CONVEYOR
 };
 
 struct Sprite

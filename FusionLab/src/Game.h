@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Timer.h"
 #include "./Machines/Miner.h"
+#include "./Machines/Conveyor.h"
 #include <array>
 
 namespace fl
@@ -30,6 +31,8 @@ private:
 
     void RenderView();
 
+    Vector2 GetTileFromMousePos() const;
+
     void PlaceMachine();
 
     void DeleteMachine();
@@ -37,8 +40,6 @@ private:
     void HandleEvent();
 
     void GenerateTerrain();
-
-    Vector2 GetTileFromMousePos() const;
 
     void MachineLogicLoop();
 

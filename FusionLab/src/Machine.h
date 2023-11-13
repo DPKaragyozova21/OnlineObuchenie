@@ -10,7 +10,7 @@ namespace fl
 enum class MachineType
 {
 	NONE,
-	COVEYOR,
+	CONVEYOR,
 	MINER,
 	SPLITTER
 };
@@ -20,6 +20,8 @@ class Machine
 public:
 
 	Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation);
+	~Machine();
+
 	static void SetMap(std::unordered_map<int, Machine*>* machineMap);
 
 	virtual void Tick() = 0;
@@ -30,6 +32,8 @@ public:
 	void TransferItems();
 
 	void Rotate();
+
+	void AddToTransferQueue(int* compound);
 
 public:
 
@@ -53,7 +57,6 @@ protected:
 
 	int pos;
 	TileType placedOn;
-
 };
 
 }

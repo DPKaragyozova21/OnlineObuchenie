@@ -5,7 +5,7 @@
 namespace fl
 {
 
-class Miner : Machine
+class Miner : public Machine
 {
 public:
 
