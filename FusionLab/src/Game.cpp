@@ -78,6 +78,11 @@ void Game::RenderView()
 
                 case TileType::O2:
                     sprite = sdl::SpriteEnum::TILE_O2;
+                    break;
+
+                case TileType::H2:
+                    sprite = sdl::SpriteEnum::TILE_H2;
+                    break;
                 }
                 sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))}, 0);
 
@@ -170,19 +175,19 @@ void Game::DeleteMachine()
     {
         delete machineMap[tilePos];
         machineMap.erase(tilePos);
-        if (machineMap.find(tilePos - 1) != machineMap.end() && !machineMap[tilePos - 1])
+        if (machineMap.find(tilePos - 1) != machineMap.end() && machineMap[tilePos - 1])
         {
             machineMap[tilePos - 1]->UpdateIO();
         }
-        if (machineMap.find(tilePos + 1) != machineMap.end() && !machineMap[tilePos + 1])
+        if (machineMap.find(tilePos + 1) != machineMap.end() && machineMap[tilePos + 1])
         {
             machineMap[tilePos + 1]->UpdateIO();
         }
-        if (machineMap.find(tilePos - 10000) != machineMap.end() && !machineMap[tilePos - 10000])
+        if (machineMap.find(tilePos - 10000) != machineMap.end() && machineMap[tilePos - 10000])
         {
             machineMap[tilePos - 10000]->UpdateIO();
         }
-        if (machineMap.find(tilePos + 10000) != machineMap.end() && !machineMap[tilePos + 10000])
+        if (machineMap.find(tilePos + 10000) != machineMap.end() && machineMap[tilePos + 10000])
         {
             machineMap[tilePos + 10000]->UpdateIO();
         }
@@ -207,6 +212,8 @@ void Game::MachineLogicLoop()
         if (tick > 60) tick = 1;
         logicTimer.GetDeltaTime();
         std::this_thread::sleep_for(std::chrono::milliseconds(int(16)));
+
+        std::cout << " ";
     }
 }
 
@@ -325,7 +332,7 @@ void Game::GenerateTerrain()
     const int chunkSize = 8;
 
     std::default_random_engine generator;
-    std::uniform_int_distribution<int> type(1, 1);
+    std::uniform_int_distribution<int> type(1, 2);
     std::uniform_int_distribution<int> oreChunk(1, 80);
     std::uniform_int_distribution<int> voidChance(0, 1);
 

@@ -11,6 +11,8 @@ public:
 
 	Conveyor(const int& position, const TileType& tile, const uint8_t& rotation);
 
+	void Turn() override;
+
 	void Tick() override;
 };
 

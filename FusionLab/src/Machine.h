@@ -32,6 +32,8 @@ public:
 	void TransferItems();
 
 	void Rotate();
+	
+	virtual void Turn() {};
 
 	void AddToTransferQueue(int* compound);
 

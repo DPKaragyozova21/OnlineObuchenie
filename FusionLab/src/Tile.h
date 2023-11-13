@@ -8,6 +8,7 @@ namespace fl
 enum class TileType : uint8_t
 {
     NONE,
+    H2,
     O2
 };
 
