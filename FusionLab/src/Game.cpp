@@ -77,12 +77,12 @@ void Game::RenderView()
                     sprite = sdl::SpriteEnum::TILE_NONE;
                     break;
 
-                case TileType::O2:
-                    sprite = sdl::SpriteEnum::TILE_O2;
+                case TileType::MAGNETITE:
+                    sprite = sdl::SpriteEnum::TILE_MAGNETITE;
                     break;
 
-                case TileType::H2:
-                    sprite = sdl::SpriteEnum::TILE_H2;
+                case TileType::HEMATITE:
+                    sprite = sdl::SpriteEnum::TILE_HEMATITE;
                     break;
                 }
                 sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))}, 0, 0);
@@ -218,7 +218,11 @@ void Game::MachineLogicLoop()
 
         for (auto i = machineMap.begin(); i != machineMap.end(); i++)
         {
-            if (i->second && !(tick % (i->second->speed + 1))) i->second->Tick();
+            if (i->second && !(tick % (i->second->speed + 1)))
+            {
+                i->second->Tick();
+                i->second->Output();
+            }
         }
         for (auto i = machineMap.begin(); i != machineMap.end(); i++)
         {
@@ -233,7 +237,7 @@ void Game::MachineLogicLoop()
 
         std::this_thread::sleep_for(std::chrono::milliseconds(int(16)));
 
-        std::cout << " ";
+        std::cout << std::endl;
     }
 }
 

@@ -7,9 +7,10 @@ namespace fl
 
 std::unordered_map<int, Machine*>* Machine::machineMap;
 
-Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation, const MachineType& machineType) :
+Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const uint8_t& storageCapacity, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation, const MachineType& machineType) :
 	type(machineType),
 	rotation(rotation),
+	storageCap(storageCapacity),
 	sprite(machineSprite),
 	animationState(0),
 	speed(machineSpeed),
@@ -22,7 +23,11 @@ Machine::Machine(const bool inputSides[], const bool outputSides[], const int& p
 	pos(position),
 	placedOn(tile)
 {
+	Rotate();
+	UpdateIO();
 
+	storage.clear();
+	transferStorage.clear();
 }
 
 Machine::~Machine()
@@ -163,6 +168,23 @@ void Machine::Rotate()
 void Machine::AddToTransferQueue(Compound* compound)
 {
 	transferStorage.push_back(compound);
+}
+
+const uint8_t Machine::GetStorageSize()
+{
+	return storage.size();
+}
+
+void Machine::Output()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (output[i] && !storage.empty() && output[i]->GetStorageSize() < output[i]->storageCap)
+		{
+			output[i]->AddToTransferQueue(storage.back());
+			storage.pop_back();
+		}
+	}
 }
 
 }

@@ -8,14 +8,12 @@ namespace fl
 const bool inputSides[4] = { 0, 0, 0, 1 };
 const bool outputSides[4] = { 1, 1, 1, 0 };
 
-const int conveyorSpeed = 9;
+const uint8_t conveyorSpeed = 9;
+const uint8_t conveyorCap = 4;
 
 Conveyor::Conveyor(const int& position, const TileType& tile, const uint8_t& rotation) :
-	Machine(inputSides, outputSides, position, conveyorSpeed, tile, sdl::SpriteEnum::MACHINE_CONVEYOR, rotation, MachineType::CONVEYOR)
+	Machine(inputSides, outputSides, position, conveyorSpeed, conveyorCap, tile, sdl::SpriteEnum::MACHINE_CONVEYOR, rotation, MachineType::CONVEYOR)
 {
-	Rotate();
-	UpdateIO();
-
 	Turn();
 }
 
@@ -80,17 +78,12 @@ void Conveyor::Tick()
 {
 	static uint8_t outCount;
 
-	if (!storage.empty()) std::cout << storage.back()->formula << " ";
+	if (!storage.empty()) std::cout << storage.back()->formula << " " << storage.size() << " ";
 
 	outCount = 0;
 	for (int i = 0; i < 4; i++)
 	{
 		if (output[i]) outCount++;
-		if (output[i] && !storage.empty())
-		{
-			output[i]->AddToTransferQueue(storage.back());
-			storage.pop_back();
-		}
 	}
 
 	if (outCount == 0)
