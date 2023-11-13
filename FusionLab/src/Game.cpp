@@ -24,6 +24,7 @@ Game::Game() :
     mouseButtonDown{0, 0},
     selectedMachine(MachineType::NONE),
     machineRotation(0),
+    invertRotation(false),
     tick(0)
 {
     GenerateTerrain();
@@ -177,18 +178,22 @@ void Game::DeleteMachine()
         machineMap.erase(tilePos);
         if (machineMap.find(tilePos - 1) != machineMap.end() && machineMap[tilePos - 1])
         {
+            machineMap[tilePos - 1]->ResetIO();
             machineMap[tilePos - 1]->UpdateIO();
         }
         if (machineMap.find(tilePos + 1) != machineMap.end() && machineMap[tilePos + 1])
         {
+            machineMap[tilePos + 1]->ResetIO();
             machineMap[tilePos + 1]->UpdateIO();
         }
         if (machineMap.find(tilePos - 10000) != machineMap.end() && machineMap[tilePos - 10000])
         {
+            machineMap[tilePos - 10000]->ResetIO();
             machineMap[tilePos - 10000]->UpdateIO();
         }
         if (machineMap.find(tilePos + 10000) != machineMap.end() && machineMap[tilePos + 10000])
         {
+            machineMap[tilePos + 10000]->ResetIO();
             machineMap[tilePos + 10000]->UpdateIO();
         }
     }
@@ -264,6 +269,7 @@ void Game::HandleEvent()
 
             case SDLK_LSHIFT:
                 camera.Sprint(true);
+                invertRotation = true;
                 break;
 
             case SDLK_1:
@@ -282,8 +288,10 @@ void Game::HandleEvent()
                 break;
 
             case SDLK_r:
-                machineRotation++;
+                if (invertRotation) machineRotation--;
+                else machineRotation++;
                 if (machineRotation == 4) machineRotation = 0;
+                if (machineRotation == 255) machineRotation = 3;
                 break;
 
             case SDLK_q:
@@ -313,6 +321,7 @@ void Game::HandleEvent()
 
             case SDLK_LSHIFT:
                 camera.Sprint(false);
+                invertRotation = false;
                 break;
             }
             break;

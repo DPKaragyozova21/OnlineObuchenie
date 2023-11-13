@@ -69,6 +69,7 @@ protected:
 
     MachineType selectedMachine;
     uint8_t machineRotation;
+    bool invertRotation;
 
     uint8_t tick;
     

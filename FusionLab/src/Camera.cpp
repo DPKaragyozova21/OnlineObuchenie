@@ -104,8 +104,8 @@ void Camera::Update()
 
 void Camera::Sprint(const bool& sprint)
 {
-    if (sprint) speed = 0.6;
-    else speed = 0.3;
+    if (sprint) speed = 0.4;
+    else speed = 0.2;
 }
 
 }

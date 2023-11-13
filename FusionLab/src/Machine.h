@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Camera.h"
-
+#include "Compound.h"
 #include <unordered_map>
 
 namespace fl
@@ -27,6 +27,7 @@ public:
 	virtual void Tick() = 0;
 	
 	void UpdateIO();
+	virtual void ResetIO() {};
 	void RemoveMachineFromIO(Machine* machine);
 
 	void TransferItems();
@@ -39,11 +40,11 @@ public:
 
 public:
 
+	static std::unordered_map<int, Machine*>* machineMap;
+
 	MachineType type;
 
 	uint8_t rotation;
-
-	static std::unordered_map<int, Machine*>* machineMap;
 
 	sdl::SpriteEnum sprite;
 
