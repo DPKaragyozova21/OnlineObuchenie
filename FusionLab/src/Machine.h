@@ -19,7 +19,7 @@ class Machine
 {
 public:
 
-	Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation);
+	Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation, const MachineType& machineType);
 	~Machine();
 
 	static void SetMap(std::unordered_map<int, Machine*>* machineMap);
@@ -38,6 +38,8 @@ public:
 	void AddToTransferQueue(int* compound);
 
 public:
+
+	MachineType type;
 
 	uint8_t rotation;
 
@@ -59,6 +61,7 @@ protected:
 
 	int pos;
 	TileType placedOn;
+	
 };
 
 }

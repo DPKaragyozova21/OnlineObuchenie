@@ -194,6 +194,17 @@ void Game::DeleteMachine()
     }
 }
 
+void Game::SampleMachine()
+{
+    static int tilePos;
+    tilePos = GetTileFromMousePos().x + GetTileFromMousePos().y * 10000;
+
+    if (machineMap.find(tilePos) != machineMap.end() && machineMap[tilePos])
+    {
+        selectedMachine = machineMap[tilePos]->type;
+    }
+}
+
 void Game::MachineLogicLoop()
 {
     while (!shouldQuit.load())
@@ -273,6 +284,10 @@ void Game::HandleEvent()
             case SDLK_r:
                 machineRotation++;
                 if (machineRotation == 4) machineRotation = 0;
+                break;
+
+            case SDLK_q:
+                SampleMachine();
                 break;
             }
             break;

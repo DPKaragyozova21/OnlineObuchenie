@@ -37,6 +37,8 @@ private:
 
     void DeleteMachine();
 
+    void SampleMachine();
+
     void HandleEvent();
 
     void GenerateTerrain();

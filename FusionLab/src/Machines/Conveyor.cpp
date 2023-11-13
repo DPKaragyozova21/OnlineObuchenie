@@ -8,8 +8,10 @@ namespace fl
 const bool inputSides[4] = { 0, 0, 0, 1 };
 const bool outputSides[4] = { 1, 1, 1, 0 };
 
+const int speed = 9;
+
 Conveyor::Conveyor(const int& position, const TileType& tile, const uint8_t& rotation) :
-	Machine(inputSides, outputSides, position, 9, tile, sdl::SpriteEnum::MACHINE_CONVEYOR, rotation)
+	Machine(inputSides, outputSides, position, speed, tile, sdl::SpriteEnum::MACHINE_CONVEYOR, rotation, MachineType::CONVEYOR)
 {
 	Rotate();
 	UpdateIO();
@@ -87,6 +89,8 @@ void Conveyor::Tick()
 		}
 
 		Rotate();
+
+		sprite = sdl::SpriteEnum::MACHINE_CONVEYOR;
 	}
 }
 
