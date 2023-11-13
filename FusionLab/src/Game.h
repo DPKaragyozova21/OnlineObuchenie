@@ -71,6 +71,8 @@ protected:
     uint8_t machineRotation;
     bool invertRotation;
 
+    uint8_t conveyorState;
+
     uint8_t tick;
     
     std::unordered_map<int, Machine*> machineMap;

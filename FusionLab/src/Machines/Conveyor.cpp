@@ -80,7 +80,7 @@ void Conveyor::Tick()
 {
 	static uint8_t outCount;
 
-	if (!storage.empty()) std::cout << *storage.back() << " ";
+	if (!storage.empty()) std::cout << storage.back()->formula << " ";
 
 	outCount = 0;
 	for (int i = 0; i < 4; i++)

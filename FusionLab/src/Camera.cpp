@@ -90,8 +90,8 @@ void Camera::Update()
 
     moved = false;
 
-    pos.x += ((moveDirs[0] * -1) + (moveDirs[2])) * speed * -deltaTime * (4.5 - zoom);
-    pos.y += ((moveDirs[1] * -1) + (moveDirs[3])) * speed * -deltaTime * (4.5 - zoom);
+    pos.x += ((moveDirs[2] * -1) + (moveDirs[0])) * speed * -deltaTime * (4.5 - zoom);
+    pos.y += ((moveDirs[3] * -1) + (moveDirs[1])) * speed * -deltaTime * (4.5 - zoom);
 
     if (pos.x < (res.x / 2) / zoom) pos.x = (res.x / 2) / zoom;
     if (pos.y < (res.y / 2) / zoom) pos.y = (res.y / 2) / zoom;

@@ -11,6 +11,7 @@ Machine::Machine(const bool inputSides[], const bool outputSides[], const int& p
 	type(machineType),
 	rotation(rotation),
 	sprite(machineSprite),
+	animationState(0),
 	speed(machineSpeed),
 	input{ nullptr, nullptr, nullptr, nullptr },
 	output{ nullptr, nullptr, nullptr, nullptr },
@@ -132,7 +133,7 @@ void Machine::RemoveMachineFromIO(Machine* machine)
 
 void Machine::TransferItems()
 {
-	for (int* i : transferStorage)
+	for (Compound* i : transferStorage)
 	{
 		storage.push_back(i);
 	}
@@ -159,7 +160,7 @@ void Machine::Rotate()
 	}
 }
 
-void Machine::AddToTransferQueue(int* compound)
+void Machine::AddToTransferQueue(Compound* compound)
 {
 	transferStorage.push_back(compound);
 }

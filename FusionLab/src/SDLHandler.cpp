@@ -5,7 +5,7 @@
 namespace fl::sdl
 {
 
-inline std::vector<Sprite> toRender;
+std::vector<Sprite> toRender;
 
 bool compareSprites(const Sprite& sprite1, const Sprite& sprite2)
 {
@@ -57,9 +57,13 @@ void SDLHandler::EndFrame() const
 	{
 		std::sort(toRender.begin(), toRender.end(), compareSprites);
 		
-		for (const Sprite& sprite : toRender)
+		for (Sprite& sprite : toRender)
 		{
 			srcRect = {((uint16_t)sprite.sprite * 32) % 2048, ((uint16_t)sprite.sprite * 32) / 2048, 32, 32 };
+			if (sprite.sprite >= SpriteEnum::MACHINE_CONVEYOR && sprite.sprite <= SpriteEnum::MACHINE_CONVEYOR_RIGHT)
+			{
+				srcRect.y += 32 * sprite.animationState;
+			}
 			SDL_RenderCopyEx(renderer, spritesheet, &srcRect, &sprite.dstRect, sprite.rotation, nullptr, SDL_FLIP_NONE);
 		}
 
@@ -69,9 +73,9 @@ void SDLHandler::EndFrame() const
 	}
 }
 
-void SDLHandler::RenderSprite(const SpriteEnum& sprite, const Vector2& dstPoint, const double& rotation) const
+void SDLHandler::RenderSprite(const SpriteEnum& sprite, const Vector2& dstPoint, const double& rotation, const uint8_t& animationState) const
 {
-	toRender.push_back(Sprite({ SDL_Rect(dstPoint.x, dstPoint.y, 32 * zoom, 32 * zoom), sprite, rotation }));
+	toRender.push_back(Sprite({ SDL_Rect(dstPoint.x, dstPoint.y, 32 * zoom, 32 * zoom), sprite, rotation, animationState }));
 
 	shouldRender = true;
 }

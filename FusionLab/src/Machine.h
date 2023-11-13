@@ -36,7 +36,7 @@ public:
 	
 	virtual void Turn() {};
 
-	void AddToTransferQueue(int* compound);
+	void AddToTransferQueue(Compound* compound);
 
 public:
 
@@ -47,6 +47,7 @@ public:
 	uint8_t rotation;
 
 	sdl::SpriteEnum sprite;
+	uint8_t animationState;
 
 	uint8_t speed;
 protected:
@@ -54,14 +55,15 @@ protected:
 	Machine* input[4];
 	Machine* output[4];
 
-	std::vector<int*> storage;
-	std::vector<int*> transferStorage;
+	std::vector<Compound*> storage;
+	std::vector<Compound*> transferStorage;
 
 	bool canInput[4];
 	bool canOutput[4];
 
 	int pos;
 	TileType placedOn;
+
 	
 };
 

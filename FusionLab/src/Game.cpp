@@ -25,6 +25,7 @@ Game::Game() :
     selectedMachine(MachineType::NONE),
     machineRotation(0),
     invertRotation(false),
+    conveyorState(0),
     tick(0)
 {
     GenerateTerrain();
@@ -42,7 +43,6 @@ void Game::Run()
 
     while (!shouldQuit.load())
     {
-        frameTimer.GetDeltaTime();
 
         currentEvent = sdlHandler.GetInput();
         
@@ -51,7 +51,7 @@ void Game::Run()
         RenderView();
         camera.Update();
         
-        std::this_thread::sleep_for(std::chrono::milliseconds(int(16 - abs(fDeltaTime))));
+        std::this_thread::sleep_for(std::chrono::milliseconds(int(2)));
     }
 }
 
@@ -85,11 +85,12 @@ void Game::RenderView()
                     sprite = sdl::SpriteEnum::TILE_H2;
                     break;
                 }
-                sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))}, 0);
+                sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))}, 0, 0);
 
                 if (machineMap.find(tilePos) != machineMap.end() && machineMap[tilePos])
                 {
-                    sdlHandler.RenderSprite(machineMap[tilePos]->sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom)) }, machineMap[tilePos]->rotation * 90);
+                    if(machineMap[tilePos]->type == MachineType::CONVEYOR) sdlHandler.RenderSprite(machineMap[tilePos]->sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom)) }, machineMap[tilePos]->rotation * 90, conveyorState);
+                    else sdlHandler.RenderSprite(machineMap[tilePos]->sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom)) }, machineMap[tilePos]->rotation * 90, machineMap[tilePos]->animationState);
                 }
             }
         }
@@ -116,7 +117,7 @@ void Game::RenderView()
         break;
     }
 
-    if (selectedMachine != MachineType::NONE) sdlHandler.RenderSprite(machineGhost, { int(mousePos.x - (16 * camera.zoom)), int(mousePos.y - (16 * camera.zoom)) }, machineRotation * 90);
+    if (selectedMachine != MachineType::NONE) sdlHandler.RenderSprite(machineGhost, { int(mousePos.x - (16 * camera.zoom)), int(mousePos.y - (16 * camera.zoom)) }, machineRotation * 90, 0);
 
     sdlHandler.EndFrame();
 }
@@ -226,7 +227,10 @@ void Game::MachineLogicLoop()
 
         tick++;
         if (tick > 60) tick = 1;
-        logicTimer.GetDeltaTime();
+
+        conveyorState++;
+        if (conveyorState == 8) conveyorState = 0;
+
         std::this_thread::sleep_for(std::chrono::milliseconds(int(16)));
 
         std::cout << " ";

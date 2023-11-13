@@ -22,11 +22,11 @@ void Miner::Tick()
 	switch (placedOn)
 	{
 	case TileType::O2:
-		AddToTransferQueue(new int(2));
+		AddToTransferQueue(new Compound("O2"));
 		break;
 
 	case TileType::H2:
-		AddToTransferQueue(new int(3));
+		AddToTransferQueue(new Compound("H2"));
 		break;
 
 	}
