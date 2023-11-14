@@ -4,7 +4,6 @@
   - [Description](#description)
   - [Documentation](#docs)
   - [How to run](#install)
-  - [Technologies](#technologies)
   - [Collaborators](#collaborators)
 
 ## 🔍 Description <a name="description"></a>
@@ -46,22 +45,6 @@
   4. Open the solution file with Visual Studio
   5. Compile the project by hitting CTRL + F5 key combination
   
-
-## 🖥️ Technologies used <a name="technologies"></a>
-### IDE & version control system:
-
-<a href="https://code.visualstudio.com/"><img src="/assets/icons/vsCode-icon.png" alt="vs code" width="60"/></a>
-<a href="https://visualstudio.microsoft.com/vs/"><img src="/assets/icons/visualStudioIcon.png" alt="VS Icon" width="60"/></a>
-<a href="https://github.com/"><img src="/assets/icons/gitHubIcon.png" alt="GitHub Icon" width="60"/></a>
-<a href="https://git-scm.com/"><img src="/assets/icons/gitIcon.png" alt="Git" width="60"/></a>
-
-### Programming languages & third-party libraries:
-
-<a href="https://cplusplus.com/"><img src="/assets/icons/cppIcon.png" alt="CPP Icon" width="60"/></a>
-<a href="https://www.libsdl.org/"> <img src="/assets/icons/sdlIcon.png" alt="SDL2" width="60"/></a>
-<a href="https://github.com/premake/premake-core"> <img src="/assets/icons/premakeIcon.png" alt="premake Icon" width="60"/></a>
-<a href="https:://python.org"> <img src="/assets/icons/pythonIcon.png" alt="premake Icon" width="60"/></a>
-
 
 ## 🧑 Collaborators <a name="collaborators"></a>
 - [Demetra Karagyozova](https://github.com/DPKaragyozova21) - Scrum trainer 
