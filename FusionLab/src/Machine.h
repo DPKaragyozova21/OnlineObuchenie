@@ -7,12 +7,16 @@
 namespace fl
 {
 
+class Hub;
+
 enum class MachineType
 {
 	NONE,
 	CONVEYOR,
 	MINER,
-	SPLITTER
+	FURNACE,
+	HUB_INPUT,
+	HUB_BLANK
 };
 
 class Machine
@@ -24,7 +28,7 @@ public:
 
 	static void SetMap(std::unordered_map<int, Machine*>* machineMap);
 
-	virtual void Tick() = 0;
+	virtual void Tick() {};
 	
 	void UpdateIO();
 	virtual void ResetIO() {};
@@ -45,6 +49,8 @@ public:
 public:
 
 	static std::unordered_map<int, Machine*>* machineMap;
+	
+	const int pos;
 
 	MachineType type;
 
@@ -66,10 +72,9 @@ protected:
 	bool canInput[4];
 	bool canOutput[4];
 
-	int pos;
 	TileType placedOn;
 
-	
+	friend class Hub;
 };
 
 }

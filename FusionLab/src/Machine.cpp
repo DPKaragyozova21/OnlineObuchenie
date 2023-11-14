@@ -8,6 +8,7 @@ namespace fl
 std::unordered_map<int, Machine*>* Machine::machineMap;
 
 Machine::Machine(const bool inputSides[], const bool outputSides[], const int& position, const uint8_t& machineSpeed, const uint8_t& storageCapacity, const TileType& tile, const sdl::SpriteEnum& machineSprite, const uint8_t& rotation, const MachineType& machineType) :
+	pos(position),
 	type(machineType),
 	rotation(rotation),
 	storageCap(storageCapacity),
@@ -20,7 +21,6 @@ Machine::Machine(const bool inputSides[], const bool outputSides[], const int& p
 	transferStorage(),
 	canInput{ inputSides[0], inputSides[1], inputSides[2], inputSides[3] },
 	canOutput{ outputSides[0], outputSides[1], outputSides[2], outputSides[3] },
-	pos(position),
 	placedOn(tile)
 {
 	Rotate();
@@ -74,22 +74,22 @@ void Machine::UpdateIO()
 			machineMap[0][pos + 1]->Turn();
 		}
 	}
-	if (canInput[(int)Side::UP] && (machineMap[0].find(pos - 10000) != machineMap[0].end()) && machineMap[0][pos - 10000])
+	if (canInput[(int)Side::UP] && (machineMap[0].find(pos - 1000) != machineMap[0].end()) && machineMap[0][pos - 1000])
 	{
-		if (machineMap[0][pos - 10000]->canOutput[(int)Side::DOWN] && !machineMap[0][pos - 10000]->output[(int)Side::DOWN])
+		if (machineMap[0][pos - 1000]->canOutput[(int)Side::DOWN] && !machineMap[0][pos - 1000]->output[(int)Side::DOWN])
 		{
-			input[(int)Side::UP] = machineMap[0][pos - 10000];
-			machineMap[0][pos - 10000]->output[(int)Side::DOWN] = this;
-			machineMap[0][pos - 10000]->Turn();
+			input[(int)Side::UP] = machineMap[0][pos - 1000];
+			machineMap[0][pos - 1000]->output[(int)Side::DOWN] = this;
+			machineMap[0][pos - 1000]->Turn();
 		}
 	}
-	if (canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()) && machineMap[0][pos + 10000])
+	if (canInput[(int)Side::DOWN] && (machineMap[0].find(pos + 1000) != machineMap[0].end()) && machineMap[0][pos + 1000])
 	{
-		if (machineMap[0][pos + 10000]->canOutput[(int)Side::UP] && !machineMap[0][pos + 10000]->output[(int)Side::UP])
+		if (machineMap[0][pos + 1000]->canOutput[(int)Side::UP] && !machineMap[0][pos + 1000]->output[(int)Side::UP])
 		{
-			input[(int)Side::DOWN] = machineMap[0][pos + 10000];
-			machineMap[0][pos + 10000]->output[(int)Side::UP] = this;
-			machineMap[0][pos + 10000]->Turn();
+			input[(int)Side::DOWN] = machineMap[0][pos + 1000];
+			machineMap[0][pos + 1000]->output[(int)Side::UP] = this;
+			machineMap[0][pos + 1000]->Turn();
 		}
 	}
 
@@ -109,20 +109,20 @@ void Machine::UpdateIO()
 			machineMap[0][pos + 1]->input[(int)Side::LEFT] = this;
 		}
 	}
-	if (canOutput[(int)Side::UP] && (machineMap[0].find(pos - 10000) != machineMap[0].end()) && machineMap[0][pos - 10000])
+	if (canOutput[(int)Side::UP] && (machineMap[0].find(pos - 1000) != machineMap[0].end()) && machineMap[0][pos - 1000])
 	{
-		if (machineMap[0][pos - 10000]->canInput[(int)Side::DOWN] && !machineMap[0][pos - 10000]->output[(int)Side::DOWN])
+		if (machineMap[0][pos - 1000]->canInput[(int)Side::DOWN] && !machineMap[0][pos - 1000]->output[(int)Side::DOWN])
 		{
-			output[(int)Side::UP] = machineMap[0][pos - 10000];
-			machineMap[0][pos - 10000]->input[(int)Side::DOWN] = this;
+			output[(int)Side::UP] = machineMap[0][pos - 1000];
+			machineMap[0][pos - 1000]->input[(int)Side::DOWN] = this;
 		}
 	}
-	if (canOutput[(int)Side::DOWN] && (machineMap[0].find(pos + 10000) != machineMap[0].end()) && machineMap[0][pos + 10000])
+	if (canOutput[(int)Side::DOWN] && (machineMap[0].find(pos + 1000) != machineMap[0].end()) && machineMap[0][pos + 1000])
 	{
-		if (machineMap[0][pos + 10000]->canInput[(int)Side::UP] && !machineMap[0][pos + 10000]->output[(int)Side::UP])
+		if (machineMap[0][pos + 1000]->canInput[(int)Side::UP] && !machineMap[0][pos + 1000]->output[(int)Side::UP])
 		{
-			output[(int)Side::DOWN] = machineMap[0][pos + 10000];
-			machineMap[0][pos + 10000]->input[(int)Side::UP] = this;
+			output[(int)Side::DOWN] = machineMap[0][pos + 1000];
+			machineMap[0][pos + 1000]->input[(int)Side::UP] = this;
 		}
 	}
 }

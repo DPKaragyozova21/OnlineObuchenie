@@ -4,8 +4,10 @@
 #include "Tile.h"
 #include "Camera.h"
 #include "Timer.h"
+#include "Hub.h"
 #include "./Machines/Miner.h"
 #include "./Machines/Conveyor.h"
+#include "./Machines/Furnace.h"
 #include <array>
 
 namespace fl
@@ -77,7 +79,9 @@ protected:
     
     std::unordered_map<int, Machine*> machineMap;
 
-    std::array<Tile, 100000000> tiles;
+    Hub* hub;
+
+    std::array<Tile, 1000000> tiles;
     
 };
 

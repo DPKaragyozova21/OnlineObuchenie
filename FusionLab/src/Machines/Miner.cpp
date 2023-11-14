@@ -8,7 +8,7 @@ namespace fl
 const bool inputSides[4] = { 0, 0, 0, 0 };
 const bool outputSides[4] = { 0, 1, 0, 0 };
 
-const uint8_t minerSpeed = 3;
+const uint8_t minerSpeed = 29;
 const uint8_t minerCap = 10;
 
 Miner::Miner(const int& position, const TileType& tile, const uint8_t& rotation) :

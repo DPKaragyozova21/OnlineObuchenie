@@ -60,9 +60,13 @@ void SDLHandler::EndFrame() const
 		for (Sprite& sprite : toRender)
 		{
 			srcRect = {((uint16_t)sprite.sprite * 32) % 2048, ((uint16_t)sprite.sprite * 32) / 2048, 32, 32 };
-			if (sprite.sprite >= SpriteEnum::MACHINE_CONVEYOR && sprite.sprite <= SpriteEnum::MACHINE_CONVEYOR_RIGHT)
+			switch (sprite.sprite)
 			{
-				srcRect.y += 32 * sprite.animationState;
+			case SpriteEnum::MACHINE_CONVEYOR:
+			case SpriteEnum::MACHINE_CONVEYOR_LEFT:
+			case SpriteEnum::MACHINE_CONVEYOR_RIGHT:
+			case SpriteEnum::MACHINE_FURNACE:
+				srcRect.y += sprite.animationState * 32;
 			}
 			SDL_RenderCopyEx(renderer, spritesheet, &srcRect, &sprite.dstRect, sprite.rotation, nullptr, SDL_FLIP_NONE);
 		}

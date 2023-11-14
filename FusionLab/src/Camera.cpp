@@ -96,8 +96,8 @@ void Camera::Update()
     if (pos.x < (res.x / 2) / zoom) pos.x = (res.x / 2) / zoom;
     if (pos.y < (res.y / 2) / zoom) pos.y = (res.y / 2) / zoom;
 
-    if (pos.x + res.x / 2 > 32000) pos.x = 32000 - (res.x / 2);
-    if (pos.y + res.y / 2 > 32000) pos.y = 32000 - (res.y / 2);
+    if (pos.x + (res.x / 2) / zoom > 32000) pos.x = 32000 - (res.x / 2) / zoom;
+    if (pos.y + (res.y / 2) / zoom > 32000) pos.y = 32000 - (res.y / 2) / zoom;
 
     if (moveDirs[0] || moveDirs[1] || moveDirs[2] || moveDirs[3]) moved = true;
 }

@@ -26,15 +26,30 @@ Game::Game() :
     machineRotation(0),
     invertRotation(false),
     conveyorState(0),
-    tick(0)
+    tick(0),
+    machineMap(),
+    hub(nullptr)
 {
     GenerateTerrain();
     Machine::SetMap(&machineMap);
+
+    hub = new Hub();
+    for (int i = 0; i < 16; i++)
+    {
+        if (hub->parts[i]) machineMap[hub->parts[i]->pos] = hub->parts[i];
+    }
 }
 
 Game::~Game()
 {
+    delete hub;
 
+    for (auto i : machineMap)
+    {
+        delete i.second;
+    }
+
+    machineMap.clear();
 }
 
 void Game::Run()
@@ -50,6 +65,8 @@ void Game::Run()
 
         RenderView();
         camera.Update();
+
+        hub->TransferItemsToHub();
         
         std::this_thread::sleep_for(std::chrono::milliseconds(int(2)));
     }
@@ -68,8 +85,8 @@ void Game::RenderView()
     {
         for (int j = -1; j <= camBounds.h; j++)
         {
-            tilePos = (int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 10000));
-            if (tilePos >= 0 && tilePos < 100000000)
+            tilePos = (int)((floor(camBounds.x) + i) + ((floor(camBounds.y) + j) * 1000));
+            if (tilePos >= 0 && tilePos < 1000000)
             {
                 switch (tiles[tilePos].type)
                 {
@@ -112,8 +129,8 @@ void Game::RenderView()
         machineGhost = sdl::SpriteEnum::GHOST_MINER;
         break;
 
-    case MachineType::SPLITTER:
-        machineGhost = sdl::SpriteEnum::NONE;
+    case MachineType::FURNACE:
+        machineGhost = sdl::SpriteEnum::MACHINE_FURNACE;
         break;
     }
 
@@ -138,7 +155,7 @@ void Game::PlaceMachine()
     static Vector2 tile;
     static int tilePos;
     tile = GetTileFromMousePos();
-    tilePos = tile.x + (tile.y * 10000);
+    tilePos = tile.x + (tile.y * 1000);
 
     if (machineMap.find(tilePos) == machineMap.end() || !machineMap[tilePos])
     {
@@ -158,8 +175,8 @@ void Game::PlaceMachine()
             }
             break;
 
-        case MachineType::SPLITTER:
-            /*machineMap[tile.x * tile.y * 10000] = new Machine();*/
+        case MachineType::FURNACE:
+            machineMap[tilePos] = (Machine*)new Furnace(tilePos, tiles[tilePos].type, machineRotation);
             break;
         }
     }
@@ -171,9 +188,9 @@ void Game::DeleteMachine()
     static Vector2 tile;
     static int tilePos;
     tile = GetTileFromMousePos();
-    tilePos = tile.x + (tile.y * 10000);
+    tilePos = tile.x + (tile.y * 1000);
 
-    if (machineMap.find(tilePos) != machineMap.end())
+    if (machineMap.find(tilePos) != machineMap.end() && machineMap[tilePos]->type != MachineType::HUB_INPUT)
     {
         delete machineMap[tilePos];
         machineMap.erase(tilePos);
@@ -187,15 +204,15 @@ void Game::DeleteMachine()
             machineMap[tilePos + 1]->ResetIO();
             machineMap[tilePos + 1]->UpdateIO();
         }
-        if (machineMap.find(tilePos - 10000) != machineMap.end() && machineMap[tilePos - 10000])
+        if (machineMap.find(tilePos - 1000) != machineMap.end() && machineMap[tilePos - 1000])
         {
-            machineMap[tilePos - 10000]->ResetIO();
-            machineMap[tilePos - 10000]->UpdateIO();
+            machineMap[tilePos - 1000]->ResetIO();
+            machineMap[tilePos - 1000]->UpdateIO();
         }
-        if (machineMap.find(tilePos + 10000) != machineMap.end() && machineMap[tilePos + 10000])
+        if (machineMap.find(tilePos + 1000) != machineMap.end() && machineMap[tilePos + 1000])
         {
-            machineMap[tilePos + 10000]->ResetIO();
-            machineMap[tilePos + 10000]->UpdateIO();
+            machineMap[tilePos + 1000]->ResetIO();
+            machineMap[tilePos + 1000]->UpdateIO();
         }
     }
 }
@@ -203,7 +220,7 @@ void Game::DeleteMachine()
 void Game::SampleMachine()
 {
     static int tilePos;
-    tilePos = GetTileFromMousePos().x + GetTileFromMousePos().y * 10000;
+    tilePos = GetTileFromMousePos().x + GetTileFromMousePos().y * 1000;
 
     if (machineMap.find(tilePos) != machineMap.end() && machineMap[tilePos])
     {
@@ -226,7 +243,7 @@ void Game::MachineLogicLoop()
         }
         for (auto i = machineMap.begin(); i != machineMap.end(); i++)
         {
-            if (i->second && !(tick % (i->second->speed + 1))) i->second->TransferItems();
+            if (i->second) i->second->TransferItems();
         }
 
         tick++;
@@ -237,7 +254,7 @@ void Game::MachineLogicLoop()
 
         std::this_thread::sleep_for(std::chrono::milliseconds(int(16)));
 
-        std::cout << std::endl;
+        //std::cout << std::endl;
     }
 }
 
@@ -291,8 +308,8 @@ void Game::HandleEvent()
                 break;
             
             case SDLK_3:
-                if (selectedMachine == MachineType::SPLITTER) selectedMachine = MachineType::NONE;
-                else selectedMachine = MachineType::SPLITTER;
+                if (selectedMachine == MachineType::FURNACE) selectedMachine = MachineType::NONE;
+                else selectedMachine = MachineType::FURNACE;
                 break;
 
             case SDLK_r:
@@ -370,14 +387,14 @@ void Game::GenerateTerrain()
 
     TileType currentChunkOreType = TileType::NONE;
 
-    for (int i = 0; i < 100000000; i++)
+    for (int i = 0; i < 1000000; i++)
     {
         tiles[i].type = TileType::NONE;
     }
 
-    for (int i = 1; i < 9999 / chunkSize; i++)
+    for (int i = 1; i < 999 / chunkSize; i++)
     {
-        for (int j = 1; j < 9999 / chunkSize; j++)
+        for (int j = 1; j < 999 / chunkSize; j++)
         {
             if (oreChunk(generator) == 1)
             {
@@ -389,16 +406,16 @@ void Game::GenerateTerrain()
             {
                 for (int chunkJ = 0; chunkJ < chunkSize; chunkJ++)
                 {
-                    if ((chunkJ == 0 || chunkJ == chunkSize - 1 || chunkI == 0 || chunkI == chunkSize - 1) && voidChance(generator) != 0) tiles[(i * chunkSize) + chunkI + ((j * chunkSize) + chunkJ) * 10000].type = TileType::NONE;
-                    else tiles[(i * chunkSize) + chunkI + ((j * chunkSize) + chunkJ) * 10000].type = currentChunkOreType;
+                    if ((chunkJ == 0 || chunkJ == chunkSize - 1 || chunkI == 0 || chunkI == chunkSize - 1) && voidChance(generator) != 0) tiles[(i * chunkSize) + chunkI + ((j * chunkSize) + chunkJ) * 1000].type = TileType::NONE;
+                    else tiles[(i * chunkSize) + chunkI + ((j * chunkSize) + chunkJ) * 1000].type = currentChunkOreType;
                     
                 }
             }
 
-            tiles[(i * chunkSize) + 0 + ((j * chunkSize) + chunkSize - 1) * 10000].type = TileType::NONE;
-            tiles[(i * chunkSize) + 0 + ((j * chunkSize) + 0) * 10000].type = TileType::NONE;
-            tiles[(i * chunkSize) + chunkSize - 1 + ((j * chunkSize) + chunkSize - 1) * 10000].type = TileType::NONE;
-            tiles[(i * chunkSize) + chunkSize - 1 + ((j * chunkSize) + 0) * 10000].type = TileType::NONE;
+            tiles[(i * chunkSize) + 0 + ((j * chunkSize) + chunkSize - 1) * 1000].type = TileType::NONE;
+            tiles[(i * chunkSize) + 0 + ((j * chunkSize) + 0) * 1000].type = TileType::NONE;
+            tiles[(i * chunkSize) + chunkSize - 1 + ((j * chunkSize) + chunkSize - 1) * 1000].type = TileType::NONE;
+            tiles[(i * chunkSize) + chunkSize - 1 + ((j * chunkSize) + 0) * 1000].type = TileType::NONE;
         }
     }
 }
