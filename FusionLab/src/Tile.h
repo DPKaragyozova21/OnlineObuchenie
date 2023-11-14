@@ -9,7 +9,8 @@ enum class TileType : uint8_t
 {
     NONE,
     MAGNETITE,
-    HEMATITE
+    HEMATITE,
+    CARBON
 };
 
 struct Tile

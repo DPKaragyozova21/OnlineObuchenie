@@ -101,6 +101,9 @@ void Game::RenderView()
                 case TileType::HEMATITE:
                     sprite = sdl::SpriteEnum::TILE_HEMATITE;
                     break;
+
+                case TileType::CARBON:
+                    sprite = sdl::SpriteEnum::TILE_CARBON;
                 }
                 sdlHandler.RenderSprite(sprite, { int(int(camBounds.x * 100) % 100 * (-0.32 * camera.zoom)) + int(i * (32 * camera.zoom)), int(int(camBounds.y * 100) % 100 * (-0.32 * camera.zoom)) + (j * int(32 * camera.zoom))}, 0, 0);
 
@@ -243,7 +246,7 @@ void Game::MachineLogicLoop()
         }
         for (auto i = machineMap.begin(); i != machineMap.end(); i++)
         {
-            if (i->second) i->second->TransferItems();
+            if (i->second && (i->second->type == MachineType::CONVEYOR || i->second->type == MachineType::MINER)) i->second->TransferItems();
         }
 
         tick++;
@@ -381,7 +384,7 @@ void Game::GenerateTerrain()
     const int chunkSize = 8;
 
     std::default_random_engine generator;
-    std::uniform_int_distribution<int> type(1, 2);
+    std::uniform_int_distribution<int> type(1, 3);
     std::uniform_int_distribution<int> oreChunk(1, 80);
     std::uniform_int_distribution<int> voidChance(0, 1);
 

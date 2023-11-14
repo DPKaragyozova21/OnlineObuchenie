@@ -40,7 +40,8 @@ public:
 	
 	virtual void Turn() {};
 
-	void AddToTransferQueue(Compound* compound);
+	void AddToInputStorage(Compound* compound);
+	void AddToOutputQueue(Compound* compound);
 
 	const uint8_t GetStorageSize();
 
@@ -66,8 +67,8 @@ protected:
 	Machine* input[4];
 	Machine* output[4];
 
-	std::vector<Compound*> storage;
-	std::vector<Compound*> transferStorage;
+	std::vector<Compound*> inputStorage;
+	std::vector<Compound*> outputQueue;
 
 	bool canInput[4];
 	bool canOutput[4];

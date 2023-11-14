@@ -39,7 +39,7 @@ void Hub::TransferItemsToHub()
 {
 	for (int i = 0; i < 16; i++)
 	{
-		for (auto i : parts[i]->storage)
+		for (auto i : parts[i]->outputQueue)
 		{
 			if(hubStorage.find(i->formula) == hubStorage.end()) hubStorage[i->formula] = 0;
 			hubStorage[i->formula]++;
@@ -47,7 +47,7 @@ void Hub::TransferItemsToHub()
 			delete i;
 		}
 
-		parts[i]->storage.clear();
+		parts[i]->outputQueue.clear();
 	}
 
 	for (auto i : hubStorage)

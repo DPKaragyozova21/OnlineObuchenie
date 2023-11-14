@@ -22,11 +22,15 @@ void Miner::Tick()
 	switch (placedOn)
 	{
 	case TileType::MAGNETITE:
-		AddToTransferQueue(new Compound("Fe3O4"));
+		AddToInputStorage(new Compound("Fe3O4"));
 		break;
 
 	case TileType::HEMATITE:
-		AddToTransferQueue(new Compound("Fe2O3"));
+		AddToInputStorage(new Compound("Fe2O3"));
+		break;
+
+	case TileType::CARBON:
+		AddToInputStorage(new Compound("CO"));
 		break;
 
 	}

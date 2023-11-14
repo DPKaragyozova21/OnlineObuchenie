@@ -20,19 +20,52 @@ Furnace::Furnace(const int& position, const TileType& tile, const uint8_t& rotat
 
 void Furnace::Tick()
 {
-	/*for (Compound* i : storage)
+	for (auto i : inputStorage)
 	{
-		std::cout << i->formula << " ";
-	}*/
+		if (i->formula == "CO")
+		{
+			for (auto j : inputStorage)
+			{
+				if (j->formula == "Fe2O3")
+				{
+					AddToOutputQueue(new Compound("Fe"));
+					AddToOutputQueue(new Compound("Fe"));
 
-	if (storage.empty()) animationState = 0;
+					delete j;
+					delete i;
+					break;
+				}
+				if (j->formula == "Fe3O4")
+				{
+					AddToOutputQueue(new Compound("Fe"));
+					AddToOutputQueue(new Compound("Fe"));
+					AddToOutputQueue(new Compound("Fe"));
+
+					delete j;
+					delete i;
+					break;
+				}
+			}
+			break;
+		}
+	}
+
+	if (inputStorage.empty())
+	{
+		animationState = 0;
+	}
 	else
 	{
+		for (auto i : outputQueue)
+		{
+			std::cout << i->formula << " ";
+		}
+
 		animationState++;
 		if (animationState == 4) animationState = 1;
 	}
 
-	if (storage.size() >= storageCap) storage.clear();
+	if (inputStorage.size() >= storageCap) inputStorage.clear();
 }
 
 }

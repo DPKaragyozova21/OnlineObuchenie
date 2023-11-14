@@ -17,27 +17,24 @@ Machine::Machine(const bool inputSides[], const bool outputSides[], const int& p
 	speed(machineSpeed),
 	input{ nullptr, nullptr, nullptr, nullptr },
 	output{ nullptr, nullptr, nullptr, nullptr },
-	storage(),
-	transferStorage(),
+	outputQueue(),
+	inputStorage(),
 	canInput{ inputSides[0], inputSides[1], inputSides[2], inputSides[3] },
 	canOutput{ outputSides[0], outputSides[1], outputSides[2], outputSides[3] },
 	placedOn(tile)
 {
 	Rotate();
 	UpdateIO();
-
-	storage.clear();
-	transferStorage.clear();
 }
 
 Machine::~Machine()
 {
-	for (auto i : storage)
+	for (auto i : outputQueue)
 	{
 		delete i;
 	}
 	
-	for (auto i : transferStorage)
+	for (auto i : inputStorage)
 	{
 		delete i;
 	}
@@ -138,12 +135,12 @@ void Machine::RemoveMachineFromIO(Machine* machine)
 
 void Machine::TransferItems()
 {
-	for (Compound* i : transferStorage)
+	for (Compound* i : inputStorage)
 	{
-		storage.push_back(i);
+		outputQueue.push_back(i);
 	}
 	
-	transferStorage.clear();
+	inputStorage.clear();
 }
 
 void Machine::Rotate()
@@ -165,24 +162,29 @@ void Machine::Rotate()
 	}
 }
 
-void Machine::AddToTransferQueue(Compound* compound)
+void Machine::AddToInputStorage(Compound* compound)
 {
-	transferStorage.push_back(compound);
+	if (outputQueue.size() < storageCap) inputStorage.push_back(compound);
+}
+
+void Machine::AddToOutputQueue(Compound* compound)
+{
+	if(outputQueue.size() < storageCap) outputQueue.push_back(compound);
 }
 
 const uint8_t Machine::GetStorageSize()
 {
-	return storage.size();
+	return inputStorage.size();
 }
 
 void Machine::Output()
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (output[i] && !storage.empty() && output[i]->GetStorageSize() < output[i]->storageCap)
+		if (output[i] && !outputQueue.empty() && output[i]->GetStorageSize() < output[i]->storageCap)
 		{
-			output[i]->AddToTransferQueue(storage.back());
-			storage.pop_back();
+			output[i]->AddToInputStorage(outputQueue.back());
+			outputQueue.pop_back();
 		}
 	}
 }
